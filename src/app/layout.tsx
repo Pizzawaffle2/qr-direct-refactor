@@ -1,5 +1,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
+import { UserProvider } from '@auth0/nextjs-auth0/client'
+import Layout from '@/components/UI/Layout'
 
 export const metadata: Metadata = {
   title: 'QR Direct',
@@ -13,7 +15,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <UserProvider>
+          <Layout>{children}</Layout>
+        </UserProvider>
+      </body>
     </html>
-  )
+  );
 }
