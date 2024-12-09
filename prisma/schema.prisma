@@ -17,9 +17,31 @@ model User {
 }
 
 model QRCode {
-  id        Int      @id @default(autoincrement())
-  content   String
-  user      User?    @relation(fields: [userId], references: [id])
-  userId    Int?
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid()) // Use `cuid()` for unique IDs
+  slug        String   @unique
+  content     String   // Preserve the `content` field from the first model
+  destination String   // Destination URL for dynamic QR codes
+  color       String   @default("#000000")  // QR code foreground color
+  background  String   @default("#ffffff")  // QR code background color
+  logo        String?  // Path to logo image
+  user        User?    @relation(fields: [userId], references: [id]) // Relation to User
+  userId      Int?     // User foreign key
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
+
+
+model ShortLink {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  destination String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ScanLog {
+  id        String   @id @default(cuid())
+  slug      String
+  timestamp DateTime @default(now())
+}
+

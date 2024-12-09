@@ -1,6 +1,8 @@
 // tests/components/QRCodeGenerator.test.tsx
 import { render, screen, fireEvent } from "@testing-library/react";
-import QRCodeGenerator from "../../components/QRCodeGenerator";
+import QRCodeGenerator from "../../src/components/QRCodeGenerator";
+import { test, expect } from '@jest/globals';
+import "@testing-library/jest-dom/extend-expect";
 
 test("renders QRCodeGenerator and handles input", () => {
   render(<QRCodeGenerator />);
@@ -11,3 +13,5 @@ test("renders QRCodeGenerator and handles input", () => {
   expect(screen.getByText("QR Code Generator")).toBeInTheDocument();
   expect(screen.getByText("https://example.com")).toBeInTheDocument();
 });
+
+
