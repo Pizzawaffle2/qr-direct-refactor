@@ -9,27 +9,59 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  qrCodes   QRCode[]
-  createdAt DateTime @default(now())
+  id           Int            @id @default(autoincrement())
+  email        String         @unique
+  name         String?
+  picture      String?        // Add profile picture URL
+  qrCodes      QRCode[]
+  preferences  UserPreferences?
+  socialLinks  SocialLinks?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model UserPreferences {
+  id                 Int      @id @default(autoincrement())
+  defaultQRColor    String   @default("#000000")
+  defaultQRSize     Int      @default(256)
+  defaultBackground String   @default("#ffffff")
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            Int      @unique
+}
+
+model SocialLinks {
+  id       Int     @id @default(autoincrement())
+  twitter  String?
+  linkedin String?
+  github   String?
+  website  String?
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   Int     @unique
 }
 
 model QRCode {
-  id          String   @id @default(cuid()) // Use `cuid()` for unique IDs
+  id          String   @id @default(cuid())
   slug        String   @unique
-  content     String   // Preserve the `content` field from the first model
-  destination String   // Destination URL for dynamic QR codes
-  color       String   @default("#000000")  // QR code foreground color
-  background  String   @default("#ffffff")  // QR code background color
-  logo        String?  // Path to logo image
-  user        User?    @relation(fields: [userId], references: [id]) // Relation to User
-  userId      Int?     // User foreign key
+  content     String
+  destination String
+  color       String   @default("#000000")
+  background  String   @default("#ffffff")
+  logo        String?
+  user        User?    @relation(fields: [userId], references: [id])
+  userId      Int?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  analytics   Analytics[]
 }
 
+model Analytics {
+  id        String   @id @default(cuid())
+  qrCodeId  String
+  qrCode    QRCode   @relation(fields: [qrCodeId], references: [id])
+  timestamp DateTime @default(now())
+  location  String?  // Optional: User location data
+  device    String?  // Optional: Device type or details
+}
 
 model ShortLink {
   id          String   @id @default(cuid())
@@ -44,4 +76,3 @@ model ScanLog {
   slug      String
   timestamp DateTime @default(now())
 }
-

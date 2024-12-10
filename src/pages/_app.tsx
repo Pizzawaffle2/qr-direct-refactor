@@ -1,14 +1,20 @@
-import '@/app/globals.css';
-import type { AppProps } from 'next/app';
-import Layout from '../components/UI/Layout';
-import { UserProvider } from '@auth0/nextjs-auth0/client';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 
-export default function App({ Component, pageProps }: AppProps) {
-  return (
-    <UserProvider>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
-    </UserProvider>
-  );
+import { AppProps } from 'next/app';
+
+function MyApp({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+
+  useEffect(() => {
+    const redirectAfterLogin = localStorage.getItem('redirectAfterLogin');
+    if (redirectAfterLogin) {
+      localStorage.removeItem('redirectAfterLogin');
+      router.push(redirectAfterLogin);
+    }
+  }, []);
+
+  return <Component {...pageProps} />;
 }
+
+export default MyApp;

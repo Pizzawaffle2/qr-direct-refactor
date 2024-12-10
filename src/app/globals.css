@@ -74,6 +74,19 @@
   }
 }
 
+
+.gradient-overlay {
+
+  position: absolute;
+
+  inset: 0;
+
+  mix-blend-mode: overlay;
+
+  background: linear-gradient(45deg, var(--gradient-color-1), var(--gradient-color-2));
+
+}
+
 @keyframes gradient {
   0% {
     background-position: 0% 50%;

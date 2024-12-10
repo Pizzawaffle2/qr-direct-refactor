@@ -6,7 +6,7 @@ import FeatureCard from '@/components/UI/FeatureCard';
 export default function Home() {
   const features = [
     { href: '/qr-generator', title: 'QR Generator', description: 'Create stunning, customizable QR codes instantly.', icon: Sparkles, color: 'text-blue-500' },
-    { href: '/calendars', title: 'Calendar Links', description: 'Create scheduling links that integrate with any calendar.', icon: Calendar, color: 'text-indigo-500' },
+    { href: '/calendars', title: 'Calendar Maker', description: 'Create and design beautiful calendars and scheduling links that integrate with any calendar.', icon: Calendar, color: 'text-indigo-500' },
     { href: '/link-shortener', title: 'Link Shortener', description: 'Create memorable, branded short links instantly.', icon: LinkIcon, color: 'text-cyan-500' },
     { href: '/bio-links', title: 'Bio Links', description: 'Create beautiful link-in-bio pages for social media.', icon: Users, color: 'text-pink-500' },
     { href: '/teams', title: 'Teams', description: 'Collaborate with your team and manage access controls.', icon: UserPlus, color: 'text-amber-500' },
