@@ -1,42 +1,54 @@
-// src/components/ui/tabs.tsx
-import { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
+import { LucideIcon } from 'lucide-react';
 
 interface TabsProps {
+  activeTab: string;
+  onChange: (tab: string) => void;
+  tabs: {
+    id: string;
+    label: string;
+    icon: LucideIcon;
+  }[];
   children: ReactNode;
 }
 
-interface TabTriggerProps {
-  value: string;
-  active: boolean;
-  onClick: () => void;
-  children: ReactNode;
-}
+export const Tabs: React.FC<TabsProps> = ({ activeTab, onChange, tabs, children }) => {
+  return (
+    <div>
+      {/* Tab Buttons */}
+      <div className="flex border-b border-gray-300 mb-4">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              className={`flex items-center gap-2 px-4 py-2 text-sm transition ${
+                isActive
+                  ? 'border-b-2 border-blue-500 text-blue-500 font-semibold'
+                  : 'text-gray-600 hover:text-blue-400'
+              }`}
+              onClick={() => onChange(tab.id)}
+            >
+              <Icon className="w-4 h-4" />
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Tab Content */}
+      <div>{children}</div>
+    </div>
+  );
+};
 
 interface TabContentProps {
-  value: string;
-  active: boolean;
+  tabId: string;
+  activeTab: string;
   children: ReactNode;
 }
 
-export const Tabs = ({ children }: TabsProps) => {
-  return <div className="tabs">{children}</div>;
+export const TabContent: React.FC<TabContentProps> = ({ tabId, activeTab, children }) => {
+  return tabId === activeTab ? <div>{children}</div> : null;
 };
-
-export const TabsList = ({ children }: TabsProps) => {
-  return <div className="tabs-list flex space-x-2">{children}</div>;
-};
-
-export const TabsTrigger = ({ value, active, onClick, children }: TabTriggerProps) => (
-  <button
-    className={`px-4 py-2 rounded ${
-      active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
-    }`}
-    onClick={onClick}
-  >
-    {children}
-  </button>
-);
-
-export const TabsContent = ({ value, active, children }: TabContentProps) => (
-  <div className={`${active ? 'block' : 'hidden'}`}>{children}</div>
-);

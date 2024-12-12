@@ -1,6 +1,6 @@
 // tests/components/QRCodeGenerator.test.tsx
 import { render, screen, fireEvent } from "@testing-library/react";
-import QRCodeGenerator from "../../src/components/QRCodeGenerator";
+import QRCodeGenerator from "../../src/components/QRCode/EnhancedQrCode";
 import { test, expect } from '@jest/globals';
 import "@testing-library/jest-dom/extend-expect";
 
