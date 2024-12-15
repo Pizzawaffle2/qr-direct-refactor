@@ -1,7 +1,17 @@
-/** @type {import('next').NextConfig} */
+// next.config.js
 const nextConfig = {
-    reactStrictMode: true,
-    swcMinify: true,
-  }
-  
-  module.exports = nextConfig
+  async rewrites() {
+    return [
+      {
+        source: '/:shortUrl',
+        has: [
+          {
+            type: 'host',
+            value: 'nodikam.com',
+          },
+        ],
+        destination: '/api/redirect/:shortUrl',
+      },
+    ];
+  },
+}

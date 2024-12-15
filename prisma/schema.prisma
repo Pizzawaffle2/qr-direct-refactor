@@ -9,15 +9,16 @@ datasource db {
 }
 
 model User {
-  id           Int            @id @default(autoincrement())
-  email        String         @unique
-  name         String?
-  picture      String?        // Add profile picture URL
-  qrCodes      QRCode[]
-  preferences  UserPreferences?
-  socialLinks  SocialLinks?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  id            Int              @id @default(autoincrement())
+  email         String          @unique
+  name          String?
+  picture       String?         // Add profile picture URL
+  qrCodes       QRCode[]
+  bioPages      BioPage[]       // Add relation to BioPages
+  preferences   UserPreferences?
+  socialLinks   SocialLinks?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 }
 
 model UserPreferences {
@@ -52,6 +53,84 @@ model QRCode {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   analytics   Analytics[]
+}
+
+model Link {
+  id           String    @id @default(cuid())
+  originalUrl  String
+  shortUrl     String    @unique
+  password     String?   // Optional password protection
+  expiresAt    DateTime? // Optional expiration date
+  createdAt    DateTime  @default(now())
+  clicks       Click[]   // Relation to click analytics
+  isActive     Boolean   @default(true)
+}
+
+model Click {
+  id        String   @id @default(cuid())
+  linkId    String
+  link      Link     @relation(fields: [linkId], references: [id])
+  timestamp DateTime @default(now())
+  ipAddress String?
+  userAgent String?
+  referer   String?
+  country   String?
+  city      String?
+  region    String?
+  latitude  Float?
+  longitude Float?
+}
+
+model BioPage {
+  id          String      @id @default(cuid())
+  userId      Int         // Changed to Int to match User model
+  user        User        @relation(fields: [userId], references: [id])
+  name        String
+  bio         String?     // Optional bio text
+  theme       Json        // Store theme settings as JSON
+  links       Json        // Store array of links as JSON
+  isPublished Boolean     @default(false)
+  views       Int         @default(0)
+  slug        String      @unique // For custom URLs
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  bioClicks   BioClick[]  // Renamed to avoid conflict with existing Click model
+  bioAnalytics BioAnalytics[] // Renamed to avoid conflict
+
+  @@index([userId])
+}
+
+model BioClick {
+  id          String    @id @default(cuid())
+  bioPageId   String
+  bioPage     BioPage   @relation(fields: [bioPageId], references: [id])
+  linkId      String    // ID of the specific link in the JSON array
+  timestamp   DateTime  @default(now())
+  ipAddress   String?
+  userAgent   String?
+  referer     String?
+  country     String?
+  city        String?
+  region      String?
+  latitude    Float?
+  longitude   Float?
+
+  @@index([bioPageId])
+  @@index([timestamp])
+}
+
+model BioAnalytics {
+  id          String    @id @default(cuid())
+  bioPageId   String
+  bioPage     BioPage   @relation(fields: [bioPageId], references: [id])
+  timestamp   DateTime  @default(now())
+  event       String    // Type of event (view, click, etc.)
+  data        Json?     // Additional event data
+  location    String?
+  device      String?
+
+  @@index([bioPageId])
+  @@index([timestamp])
 }
 
 model Analytics {
