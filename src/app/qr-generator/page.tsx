@@ -3,12 +3,15 @@
 
 import { useState } from 'react';
 import { Tabs } from '@/components/UI/tabs';
-import { Palette, Image as ImageIcon, Sliders } from 'lucide-react';
+import { Palette, Image as ImageIcon, Sliders, Layout } from 'lucide-react';
+import { QRInput } from '@/components/QRCode/QRInput';
 import { BasicTab } from '@/components/QRCode/BasicTab';
 import { StyleTab } from '@/components/QRCode/StyleTab';
 import { AdvancedTab } from '@/components/QRCode/AdvancedTab';
+import { TemplatesTab } from '@/components/QRCode/TemplatesTab';
 import { QRCodePreview } from '@/components/QRCode/QRCodePreview';
-import { QROptions, QRDotType } from '@/types/qr';
+import { QRTemplate, QROptions } from '@/types/qr';
+import { QR_TEMPLATES } from '@/constants/qr-templates';
 import toast from 'react-hot-toast';
 
 const defaultOptions: QROptions = {
@@ -20,24 +23,50 @@ const defaultOptions: QROptions = {
     color: '#000000',
     type: 'square',
   },
+  cornersSquareOptions: {
+    type: 'square',
+    color: '#000000',
+  },
+  cornersDotOptions: {
+    type: 'square',
+    color: '#000000',
+  },
   backgroundOptions: {
     color: '#FFFFFF',
   },
   borderOptions: {
     color: '#000000',
-    radius: 0,
     width: 0,
+    radius: 0,
   },
   errorCorrectionLevel: 'M',
-  pluginOptions: {
-    key: '',
-    isActive: false,
-  },
 };
 
 export default function QRGeneratorPage() {
-  const [activeTab, setActiveTab] = useState<'basic' | 'style' | 'advanced'>('basic');
+  const [activeTab, setActiveTab] = useState<'templates' | 'basic' | 'style' | 'advanced'>('templates');
   const [options, setOptions] = useState<QROptions>(defaultOptions);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
+
+  // Templates tab handlers
+  const handleTemplateSelect = (template: QRTemplate) => {
+    setOptions(prev => ({
+      ...template.options,
+      data: prev.data, // Preserve existing QR content
+      dotsOptions: {
+        ...template.options.dotsOptions,
+        type: template.options.dotsOptions.type as QROptions['dotsOptions']['type'],
+      },
+      cornersSquareOptions: {
+        ...template.options.cornersSquareOptions,
+        type: template.options.cornersSquareOptions.type as QROptions['cornersSquareOptions']['type'],
+      },
+      cornersDotOptions: {
+        ...template.options.cornersDotOptions,
+        type: template.options.cornersDotOptions.type as QROptions['cornersDotOptions']['type'],
+      },
+    }));
+    setSelectedTemplateId(template.id);
+  };
 
   // Basic tab handlers
   const handleDataChange = (data: string) => {
@@ -55,10 +84,31 @@ export default function QRGeneratorPage() {
   };
 
   // Style tab handlers
-  const handleDotTypeChange = (type: QRDotType) => {
+  const handleDotTypeChange = (type: QROptions['dotsOptions']['type']) => {
     setOptions(prev => ({
       ...prev,
       dotsOptions: { ...prev.dotsOptions, type },
+    }));
+  };
+
+  const handleDotStyleChange = (newOptions: Partial<QROptions['dotsOptions']>) => {
+    setOptions(prev => ({
+      ...prev,
+      dotsOptions: {
+        ...prev.dotsOptions,
+        ...newOptions,
+      },
+    }));
+  };
+
+  const handleCornerChange = (changes: {
+    square?: Partial<QROptions['cornersSquareOptions']>;
+    dot?: Partial<QROptions['cornersDotOptions']>;
+  }) => {
+    setOptions(prev => ({
+      ...prev,
+      ...(changes.square && { cornersSquareOptions: { ...prev.cornersSquareOptions, ...changes.square } }),
+      ...(changes.dot && { cornersDotOptions: { ...prev.cornersDotOptions, ...changes.dot } }),
     }));
   };
 
@@ -81,20 +131,19 @@ export default function QRGeneratorPage() {
     setOptions(prev => ({ ...prev, errorCorrectionLevel: level }));
   };
 
-  const handlePluginOptionsChange = (key: string, isActive: boolean) => {
+  const handleImageOptionsChange = (imageOptions?: QROptions['imageOptions']) => {
     setOptions(prev => ({
       ...prev,
-      pluginOptions: { key, isActive },
+      imageOptions,
     }));
   };
 
   // Download handler
   const handleDownload = async () => {
     try {
-      // The QR code styling library will handle the download
       const qr = document.querySelector('#qr-code-container canvas');
       if (qr) {
-        const dataUrl = (qr as HTMLCanvasElement).toDataURL();
+        const dataUrl = (qr as HTMLCanvasElement).toDataURL('image/png');
         const link = document.createElement('a');
         link.download = `qr-code-${Date.now()}.png`;
         link.href = dataUrl;
@@ -115,24 +164,42 @@ export default function QRGeneratorPage() {
           QR Code Generator
         </h1>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Controls */}
-          <div className="space-y-6">
-            <Tabs
-              activeTab={activeTab}
-              onChange={(tab) => setActiveTab(tab as 'basic' | 'style' | 'advanced')}
-              tabs={[
-                { id: 'basic', label: 'Basic', icon: Palette },
-                { id: 'style', label: 'Style', icon: Sliders },
-                { id: 'advanced', label: 'Advanced', icon: ImageIcon },
-              ]}
-            >
+        <div className="grid lg:grid-cols-2 gap-8 items-start">
+          {/* Left Column - Controls */}
+          <div className="space-y-6 max-h-[90vh] overflow-y-auto pr-2">
+            {/* QR Input - Always visible */}
+            <QRInput 
+              value={options.data} 
+              onChange={handleDataChange}
+            />
+
+            {/* Tabs */}
+            <div className="sticky top-0 z-10 bg-gradient-to-b from-[rgb(var(--background-start))] to-transparent pb-4">
+              <Tabs
+                activeTab={activeTab}
+                onChange={(tab) => setActiveTab(tab as typeof activeTab)}
+                tabs={[
+                  { id: 'templates', label: 'Templates', icon: Layout },
+                  { id: 'basic', label: 'Basic', icon: Palette },
+                  { id: 'style', label: 'Style', icon: Sliders },
+                  { id: 'advanced', label: 'Advanced', icon: ImageIcon },
+                ]}
+              />
+            </div>
+
+            {/* Tab Content */}
+            <div className="min-h-[400px]">
+              {activeTab === 'templates' && (
+                <TemplatesTab
+                  onTemplateSelect={handleTemplateSelect}
+                  selectedTemplateId={selectedTemplateId}
+                />
+              )}
+
               {activeTab === 'basic' && (
                 <BasicTab
-                  data={options.data}
                   dotsColor={options.dotsOptions.color}
                   backgroundColor={options.backgroundOptions.color}
-                  onDataChange={handleDataChange}
                   onColorChange={handleColorChange}
                 />
               )}
@@ -140,10 +207,18 @@ export default function QRGeneratorPage() {
               {activeTab === 'style' && (
                 <StyleTab
                   dotType={options.dotsOptions.type}
+                  dotsColor={options.dotsOptions.color}
+                  dotsGradient={options.dotsOptions.gradient}
+                  cornerSquareType={options.cornersSquareOptions.type}
+                  cornerSquareColor={options.cornersSquareOptions.color}
+                  cornerDotType={options.cornersDotOptions.type}
+                  cornerDotColor={options.cornersDotOptions.color}
                   borderColor={options.borderOptions.color}
                   borderRadius={options.borderOptions.radius}
                   borderWidth={options.borderOptions.width}
                   onDotTypeChange={handleDotTypeChange}
+                  onDotStyleChange={handleDotStyleChange}
+                  onCornerChange={handleCornerChange}
                   onBorderChange={handleBorderChange}
                 />
               )}
@@ -152,17 +227,26 @@ export default function QRGeneratorPage() {
                 <AdvancedTab
                   margin={options.margin}
                   errorCorrectionLevel={options.errorCorrectionLevel}
-                  pluginKey={options.pluginOptions.key}
-                  pluginActive={options.pluginOptions.isActive}
+                  imageOptions={options.imageOptions}
                   onMarginChange={handleMarginChange}
                   onErrorCorrectionChange={handleErrorCorrectionChange}
-                  onPluginOptionsChange={handlePluginOptionsChange}
+                  onImageOptionsChange={handleImageOptionsChange}
                 />
               )}
-            </Tabs>
+            </div>
+
+            {/* Quick Tips */}
+            <div className="glass-card p-4 rounded-lg sticky bottom-0 bg-white/80 backdrop-blur-sm">
+              <p className="text-sm text-gray-600">
+                {activeTab === 'templates' && '💡 Choose a template as a starting point, then customize it in other tabs'}
+                {activeTab === 'basic' && '💡 Choose colors to match your brand or design'}
+                {activeTab === 'style' && '💡 Experiment with different dot styles and corner options'}
+                {activeTab === 'advanced' && '💡 Higher error correction allows for better readability with logos'}
+              </p>
+            </div>
           </div>
 
-          {/* Preview */}
+          {/* Right Column - Preview */}
           <div className="lg:sticky lg:top-8">
             <QRCodePreview 
               options={options}
