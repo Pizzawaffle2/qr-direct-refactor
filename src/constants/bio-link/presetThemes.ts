@@ -68,3 +68,17 @@ export const PRESET_THEMES: Record<string, BioPageTheme> = {
     }
   }
 };
+
+export const DEFAULT_THEME: BioPageTheme = {
+  name: 'Default',
+  backgroundColor: '#FFFFFF',
+  fontFamily: 'Inter',
+  buttonStyle: 'rounded',
+  buttonAnimation: 'none',
+  colorScheme: {
+    primary: '#3B82F6',
+    secondary: '#64748B',
+    text: '#1F2937',
+    background: '#FFFFFF'
+  }
+};

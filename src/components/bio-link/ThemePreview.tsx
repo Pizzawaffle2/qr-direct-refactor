@@ -1,7 +1,9 @@
 // src/app/bio-link/components/ThemePreview.tsx
 'use client';
 
-import { BioPageTheme, BioLink } from '@/app/bio-links/types';
+import { BioPageTheme, BioLink, AnimationType } from '@/app/bio-links/types';
+
+// Removed local declaration of AnimationType
 import { ExternalLink } from 'lucide-react';
 
 interface ThemePreviewProps {
@@ -26,12 +28,14 @@ export function ThemePreview({
       sharp: 'rounded-none',
       pill: 'rounded-full'
     };
-    const animationClasses = {
+    const animationClasses: Record<AnimationType, string> = {
       none: '',
       scale: 'hover:scale-105',
       shine: 'hover:shadow-lg',
-      shake: 'hover:animate-shake'
-    };
+      fade: 'hover:opacity-90',
+      slide: 'hover:translate-x-1',
+      bounce: 'hover:scale-[1.02] active:scale-[0.98]'
+      };
 
     return `${baseClasses} ${styleClasses[theme.buttonStyle]} ${animationClasses[theme.buttonAnimation]}`;
   };
