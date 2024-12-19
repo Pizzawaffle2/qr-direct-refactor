@@ -1,3 +1,4 @@
+// src\app\api\log-scan\route.ts
 import { NextResponse } from "next/server";
 
 const scanLogs: Record<string, number> = {};

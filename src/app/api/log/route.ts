@@ -1,3 +1,5 @@
+// src\app\api\log\route.ts
+
 import { NextResponse } from "next/server";
 
 const logs: Record<string, number> = {};

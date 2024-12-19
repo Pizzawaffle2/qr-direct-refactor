@@ -1,3 +1,4 @@
+// src\pages\api\subscription\route.ts
 import Stripe from 'stripe';
 import { NextApiRequest, NextApiResponse } from 'next';
 

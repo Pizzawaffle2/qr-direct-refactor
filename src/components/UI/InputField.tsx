@@ -10,6 +10,7 @@ interface InputFieldProps {
   placeholder?: string;
   min?: number;
   max?: number;
+  step?: string;
 }
 
 const InputField: React.FC<InputFieldProps> = ({ label, type, value, onChange, disabled, placeholder }) => {
