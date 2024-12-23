@@ -1,6 +1,6 @@
 // src/pages/api/bio-links/index.ts
 import { NextApiRequest, NextApiResponse } from 'next';
-import { prisma, Prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { nanoid } from 'nanoid';
 import { getSession } from '@auth0/nextjs-auth0';
 import { z } from 'zod';
