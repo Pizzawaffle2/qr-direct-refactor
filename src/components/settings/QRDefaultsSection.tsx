@@ -2,104 +2,84 @@
 'use client';
 
 import { useState } from 'react';
-import InputField from '@/components/UI/InputField';
-import toast from 'react-hot-toast';
+import { ColorPicker } from '@/components/UI/ColorPicker';
 
 export function QRDefaultsSection() {
-  const [settings, setSettings] = useState({
-    defaultQRColor: '#000000',
-    defaultQRSize: 256,
-    defaultQRBackground: '#FFFFFF',
-    defaultLogo: null as string | null,
-    errorCorrection: 'M',
-    style: 'square'
-  });
-
-  const [loading, setLoading] = useState(false);
-
-  const handleSave = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch('/api/user/preferences', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(settings),
-      });
-
-      if (!response.ok) throw new Error('Failed to update settings');
-      toast.success('QR settings updated successfully');
-    } catch (error) {
-      console.error('Error saving settings:', error);
-      toast.error('Failed to update settings');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [defaultColor, setDefaultColor] = useState('#000000');
+  const [bgColor, setBgColor] = useState('#FFFFFF');
+  const [defaultSize, setDefaultSize] = useState(300);
+  const [defaultStyle, setDefaultStyle] = useState('square');
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-xl font-semibold mb-4">QR Code Defaults</h2>
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          QR Code Defaults
+        </h2>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">
+          Set your default QR code settings for new codes.
+        </p>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <InputField
-          label="Default Color"
-          type="color"
-          value={settings.defaultQRColor}
-          onChange={(e) => setSettings({
-            ...settings,
-            defaultQRColor: e.target.value
-          })}
-        />
-
-        <InputField
-          label="Background Color"
-          type="color"
-          value={settings.defaultQRBackground}
-          onChange={(e) => setSettings({
-            ...settings,
-            defaultQRBackground: e.target.value
-          })}
-        />
-
-        <InputField
-          label="Size (px)"
-          type="number"
-          min={128}
-          max={1024}
-          step="32"
-          value={settings.defaultQRSize.toString()}
-          onChange={(e) => setSettings({
-            ...settings,
-            defaultQRSize: parseInt(e.target.value)
-          })}
-        />
+      {/* Colors */}
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Default QR Color
+          </label>
+          <ColorPicker color={defaultColor} onChange={setDefaultColor} />
+        </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Error Correction</label>
-          <select
-            aria-label="Error correction level"
-            value={settings.errorCorrection}
-            onChange={(e) => setSettings({
-              ...settings,
-              errorCorrection: e.target.value
-            })}
-            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="L">Low (7%)</option>
-            <option value="M">Medium (15%)</option>
-            <option value="Q">Quartile (25%)</option>
-            <option value="H">High (30%)</option>
-          </select>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Default Background Color
+          </label>
+          <ColorPicker color={bgColor} onChange={setBgColor} />
         </div>
       </div>
 
-      <div className="flex justify-end">
-        <button
-          onClick={handleSave}
-          disabled={loading}
-          className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+      {/* Size */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Default Size (pixels)
+        </label>
+        <input
+          type="range"
+          min="100"
+          max="1000"
+          step="50"
+          value={defaultSize}
+          onChange={(e) => setDefaultSize(Number(e.target.value))}
+          className="w-full accent-blue-500"
+          title="Default Size"
+        />
+        <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          {defaultSize}px × {defaultSize}px
+        </div>
+      </div>
+
+      {/* Style */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Default Style
+        </label>
+        <select
+          aria-label="Default Style"
+          value={defaultStyle}
+          onChange={(e) => setDefaultStyle(e.target.value)}
+          className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
         >
-          {loading ? 'Saving...' : 'Save Changes'}
+          <option value="square">Square</option>
+          <option value="dots">Dots</option>
+          <option value="rounded">Rounded</option>
+          <option value="extra-rounded">Extra Rounded</option>
+        </select>
+      </div>
+
+      {/* Save Button */}
+      <div className="pt-4">
+        <button className="btn-primary w-full">
+          Save Default Settings
         </button>
       </div>
     </div>

@@ -2,224 +2,210 @@
 'use client';
 
 import { useState } from 'react';
-import { Shield, Lock, Eye, AlertTriangle, Bell, History } from 'lucide-react';
-import toast from 'react-hot-toast';
-
-type PrivacySettings = {
-  publicProfile: boolean;
-  searchable: boolean;
-  showQRHistory: boolean;
-  shareAnalytics: boolean;
-};
-
-type SecuritySettings = {
-  twoFactorEnabled: boolean;
-  loginNotifications: boolean;
-  activityAlerts: boolean;
-  apiAccessAlerts: boolean;
-};
-
-type Settings = {
-  privacy: PrivacySettings;
-  security: SecuritySettings;
-};
+import { Shield, Smartphone, Key, Globe, History } from 'lucide-react';
 
 export function PrivacySecuritySection() {
-  const [loading, setLoading] = useState(false);
-  const [settings, setSettings] = useState<Settings>({
-    privacy: {
-      publicProfile: false,
-      shareAnalytics: true,
-      searchable: true,
-      showQRHistory: false
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [showQRCode, setShowQRCode] = useState(false);
+  const [sessions] = useState([
+    {
+      device: 'Chrome on Windows',
+      location: 'London, UK',
+      lastActive: 'Active now',
+      current: true
     },
-    security: {
-      twoFactorEnabled: false,
-      loginNotifications: true,
-      activityAlerts: true,
-      apiAccessAlerts: true
+    {
+      device: 'Safari on iPhone',
+      location: 'New York, US',
+      lastActive: '2 hours ago',
+      current: false
     }
-  });
+  ]);
 
-  const handleToggle = async (category: 'privacy' | 'security', setting: keyof PrivacySettings | keyof SecuritySettings) => {
-    setLoading(true);
-    try {
-      const newValue = !settings[category][setting as keyof (PrivacySettings | SecuritySettings)];
-      
-      const response = await fetch('/api/user/privacy-settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          category,
-          setting,
-          value: newValue
-        })
-      });
+  const handleEnable2FA = async () => {
+    // In a real app, this would:
+    // 1. Call API to generate 2FA secret
+    // 2. Show QR code setup
+    // 3. Verify code
+    setShowQRCode(true);
+  };
 
-      if (!response.ok) throw new Error('Failed to update settings');
-
-      setSettings({
-        ...settings,
-        [category]: {
-          ...settings[category],
-          [setting]: newValue
-        }
-      });
-
-      toast.success('Settings updated successfully');
-    } catch (error) {
-      toast.error('Failed to update settings');
-    } finally {
-      setLoading(false);
-    }
+  const handleDisable2FA = async () => {
+    // In a real app, this would:
+    // 1. Verify current password
+    // 2. Disable 2FA
+    setTwoFactorEnabled(false);
+    setShowQRCode(false);
   };
 
   return (
     <div className="space-y-8">
-      {/* Privacy Settings */}
       <div>
-        <div className="flex items-center gap-2 mb-6">
-          <Eye className="w-5 h-5 text-blue-500" />
-          <h2 className="text-xl font-semibold">Privacy</h2>
-        </div>
-
-        <div className="space-y-4">
-          {Object.entries(settings.privacy).map(([key, value]) => (
-            <div key={key} className="flex items-center justify-between p-4 bg-white rounded-lg border">
-              <div>
-                <h3 className="font-medium">
-                  {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                </h3>
-                <p className="text-sm text-gray-600 mt-1">
-                  {getPrivacyDescription(key as keyof PrivacySettings)}
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={value}
-                  onChange={() => handleToggle('privacy', key as keyof PrivacySettings)}
-                  disabled={loading}
-                  className="sr-only peer"
-                  title={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                />
-                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
-              </label>
-            </div>
-          ))}
-        </div>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          Privacy & Security
+        </h2>
+        <p className="text-gray-600 dark:text-gray-400">
+          Manage your account security and privacy settings.
+        </p>
       </div>
 
-      {/* Security Settings */}
-      <div className="pt-8 border-t">
-        <div className="flex items-center gap-2 mb-6">
-          <Shield className="w-5 h-5 text-blue-500" />
-          <h2 className="text-xl font-semibold">Security</h2>
-        </div>
-
-        <div className="space-y-4">
-          {Object.entries(settings.security).map(([key, value]) => (
-            <div key={key} className="flex items-center justify-between p-4 bg-white rounded-lg border">
-              <div>
-                <h3 className="font-medium">
-                  {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                </h3>
-                <p className="text-sm text-gray-600 mt-1">
-                  {getSecurityDescription(key as keyof SecuritySettings)}
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={value}
-                  onChange={() => handleToggle('security', key as keyof SecuritySettings)}
-                  disabled={loading}
-                  className="sr-only peer"
-                  title={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                />
-                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
-              </label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Connected Sessions */}
-      <div className="pt-8 border-t">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <History className="w-5 h-5 text-blue-500" />
-            <h2 className="text-xl font-semibold">Active Sessions</h2>
+      {/* Two-Factor Authentication */}
+      <div className="glass-card p-6 space-y-4">
+        <div className="flex items-start gap-4">
+          <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900">
+            <Shield className="w-6 h-6 text-blue-500 dark:text-blue-400" />
           </div>
-          <button 
-            className="text-sm text-red-500 hover:text-red-600"
-            onClick={() => {
-              // Handle logging out all other sessions
-              toast.success('Logged out of all other sessions');
-            }}
-          >
-            Sign out all other sessions
+          <div className="flex-1">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+              Two-Factor Authentication
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
+              Add an extra layer of security to your account by requiring both your password and an authentication code.
+            </p>
+          </div>
+          <div>
+            <button
+              onClick={() => twoFactorEnabled ? handleDisable2FA() : handleEnable2FA()}
+              className={`btn-${twoFactorEnabled ? 'secondary' : 'primary'}`}
+            >
+              {twoFactorEnabled ? 'Disable 2FA' : 'Enable 2FA'}
+            </button>
+          </div>
+        </div>
+
+        {showQRCode && !twoFactorEnabled && (
+          <div className="mt-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
+              Set up Two-Factor Authentication
+            </h4>
+            <div className="space-y-4">
+              <div className="bg-white p-4 rounded-lg w-fit">
+                {/* QR Code would go here */}
+                <div className="w-48 h-48 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Enter verification code
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter code"
+                  />
+                  <button 
+                    className="btn-primary"
+                    onClick={() => setTwoFactorEnabled(true)}
+                  >
+                    Verify
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Password Settings */}
+      <div className="glass-card p-6">
+        <div className="flex items-start gap-4">
+          <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900">
+            <Key className="w-6 h-6 text-green-500 dark:text-green-400" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+              Password
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
+              Update your password or enable password-less login.
+            </p>
+          </div>
+          <button className="btn-secondary">
+            Change Password
           </button>
         </div>
+      </div>
 
-        <div className="space-y-3">
-          {[
-            { device: 'MacBook Pro', location: 'New York, US', current: true },
-            { device: 'iPhone 12', location: 'New York, US', current: false },
-            { device: 'Windows PC', location: 'Boston, US', current: false },
-          ].map((session, index) => (
-            <div key={index} className="flex items-center justify-between p-4 bg-white rounded-lg border">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">{session.device}</span>
-                  {session.current && (
-                    <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">
-                      Current
-                    </span>
+      {/* Privacy Settings */}
+      <div className="glass-card p-6">
+        <div className="flex items-start gap-4">
+          <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900">
+            <Globe className="w-6 h-6 text-purple-500 dark:text-purple-400" />
+          </div>
+          <div className="flex-1 space-y-4">
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                Privacy Settings
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mt-1">
+                Control what information is visible to others.
+              </p>
+            </div>
+            
+            <div className="space-y-3">
+              {[
+                'Make my QR codes public',
+                'Show my profile to other users',
+                'Allow email notifications',
+                'Share usage analytics'
+              ].map((setting) => (
+                <label key={setting} className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <span className="text-gray-700 dark:text-gray-300">{setting}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Active Sessions */}
+      <div className="glass-card p-6">
+        <div className="flex items-start gap-4">
+          <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900">
+            <History className="w-6 h-6 text-orange-500 dark:text-orange-400" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+              Active Sessions
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
+              Manage your active sessions across different devices.
+            </p>
+
+            <div className="mt-4 space-y-4">
+              {sessions.map((session, index) => (
+                <div 
+                  key={index}
+                  className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg"
+                >
+                  <div>
+                    <div className="font-medium text-gray-900 dark:text-gray-100">
+                      {session.device}
+                      {session.current && (
+                        <span className="ml-2 text-xs bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 px-2 py-1 rounded-full">
+                          Current Session
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      {session.location} • {session.lastActive}
+                    </div>
+                  </div>
+                  {!session.current && (
+                    <button className="btn-secondary text-sm">
+                      End Session
+                    </button>
                   )}
                 </div>
-                <div className="text-sm text-gray-600 mt-1">{session.location}</div>
-              </div>
-              {!session.current && (
-                <button 
-                  className="text-sm text-red-500 hover:text-red-600"
-                  onClick={() => {
-                    // Handle session termination
-                    toast.success(`Signed out of ${session.device}`);
-                  }}
-                >
-                  Sign out
-                </button>
-              )}
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </div>
   );
-}
-
-// Descriptions for privacy settings
-const privacyDescriptions = {
-  publicProfile: 'Allow others to view your public profile and QR codes',
-  shareAnalytics: 'Share anonymous usage data to help improve our services',
-  searchable: 'Allow your profile to appear in search results',
-  showQRHistory: 'Show your QR code creation history on your public profile'
-};
-
-// Descriptions for security settings
-const securityDescriptions = {
-  twoFactorEnabled: 'Require a verification code when signing in',
-  loginNotifications: 'Get notified of new sign-ins to your account',
-  activityAlerts: 'Receive alerts for important account activities',
-  apiAccessAlerts: 'Get notified when your API keys are used'
-};
-
-// Helper functions for descriptions
-function getPrivacyDescription(key: keyof typeof privacyDescriptions): string {
-  return privacyDescriptions[key];
-}
-
-function getSecurityDescription(key: keyof typeof securityDescriptions): string {
-  return securityDescriptions[key];
 }

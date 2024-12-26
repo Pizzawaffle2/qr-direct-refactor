@@ -4,49 +4,73 @@
 
 @layer base {
   :root {
+    /* Light theme */
     --background-start: 255, 255, 255;
     --background-end: 249, 250, 251;
     --foreground: 15, 23, 42;
+    --muted: 241, 245, 249;
+    --muted-foreground: 100, 116, 139;
+    
     --card: 255, 255, 255;
     --card-foreground: 15, 23, 42;
+    
+    --popover: 255, 255, 255;
+    --popover-foreground: 15, 23, 42;
+    
     --primary: 37, 99, 235;
     --primary-foreground: 255, 255, 255;
-    --secondary: 244, 244, 245;
+    
+    --secondary: 241, 245, 249;
     --secondary-foreground: 15, 23, 42;
-    --muted: 244, 244, 245;
-    --muted-foreground: 107, 114, 128;
+    
     --accent: 244, 244, 245;
     --accent-foreground: 15, 23, 42;
+    
     --border: 226, 232, 240;
+    --input: 226, 232, 240;
+    --ring: 37, 99, 235;
+
+    --radius: 0.5rem;
   }
 
   .dark {
-    --background-start: 17, 24, 39;
-    --background-end: 15, 23, 42;
+    /* Dark theme with deeper, richer colors */
+    --background-start: 15, 23, 42;  /* Deeper blue-gray */
+    --background-end: 17, 24, 39;    /* Rich navy */
     --foreground: 226, 232, 240;
-    --card: 30, 41, 59;
-    --card-foreground: 226, 232, 240;
-    --primary: 56, 189, 248;
-    --primary-foreground: 15, 23, 42;
-    --secondary: 30, 41, 59;
-    --secondary-foreground: 226, 232, 240;
     --muted: 30, 41, 59;
     --muted-foreground: 148, 163, 184;
+    
+    --card: 30, 41, 59;
+    --card-foreground: 226, 232, 240;
+    
+    --popover: 30, 41, 59;
+    --popover-foreground: 226, 232, 240;
+    
+    --primary: 56, 189, 248;         /* Brighter blue for dark mode */
+    --primary-foreground: 15, 23, 42;
+    
+    --secondary: 30, 41, 59;
+    --secondary-foreground: 226, 232, 240;
+    
     --accent: 30, 41, 59;
     --accent-foreground: 226, 232, 240;
+    
     --border: 51, 65, 85;
+    --input: 51, 65, 85;
+    --ring: 56, 189, 248;
   }
 }
 
 @layer components {
   .morphing-background {
-    @apply absolute inset-0;
+    @apply absolute inset-0 overflow-hidden;
     background: linear-gradient(
       45deg,
-      rgba(59, 130, 246, 0.1),
-      rgba(147, 51, 234, 0.1),
-      rgba(59, 130, 246, 0.1),
-      rgba(236, 72, 153, 0.1)
+      rgba(59, 130, 246, 0.08),
+      rgba(147, 51, 234, 0.08),
+      rgba(59, 130, 246, 0.08),
+      rgba(236, 72, 153, 0.08)
     );
     background-size: 400% 400%;
     animation: gradient 15s ease infinite;
@@ -55,65 +79,97 @@
   .dark .morphing-background {
     background: linear-gradient(
       45deg,
-      rgba(59, 130, 246, 0.15),
-      rgba(147, 51, 234, 0.15),
-      rgba(59, 130, 246, 0.15),
-      rgba(236, 72, 153, 0.15)
+      rgba(59, 130, 246, 0.12),
+      rgba(147, 51, 234, 0.12),
+      rgba(59, 130, 246, 0.12),
+      rgba(236, 72, 153, 0.12)
     );
   }
 
   .glass-card {
-    @apply bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    @apply relative overflow-hidden bg-white/80 dark:bg-slate-900/80
+           backdrop-blur-md border border-white/20 dark:border-gray-800/50
+           shadow-lg dark:shadow-lg dark:shadow-gray-950/50;
+    transition: all 0.2s ease;
+  }
+
+  .glass-card:hover {
+    @apply border-white/30 dark:border-gray-700/50 
+           shadow-xl dark:shadow-xl dark:shadow-gray-950/50;
+  }
+
+  .glass-card::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-br from-white/5 to-white/0 dark:from-white/5 dark:to-black/5;
+    pointer-events: none;
   }
 
   .animated-gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-400;
-    background-size: 200% 200%;
+    @apply font-bold bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      to right,
+      rgb(37, 99, 235),     /* blue-600 */
+      rgb(59, 130, 246),    /* blue-500 */
+      rgb(96, 165, 250)     /* blue-400 */
+    );
+    background-size: 200% auto;
     animation: shimmer 2s linear infinite;
   }
+
+  .dark .animated-gradient-text {
+    background-image: linear-gradient(
+      to right,
+      rgb(56, 189, 248),    /* Lighter blue */
+      rgb(96, 165, 250),    /* Mid blue */
+      rgb(147, 197, 253)    /* Lightest blue */
+    );
+  }
+
+  /* Enhanced Buttons */
+  .btn-primary {
+    @apply px-4 py-2 bg-blue-500 hover:bg-blue-600 
+           text-white rounded-lg transition-all 
+           shadow-md hover:shadow-lg 
+           active:shadow-sm active:translate-y-0.5
+           dark:bg-blue-400 dark:hover:bg-blue-500 
+           dark:shadow-blue-500/20 dark:hover:shadow-blue-500/30;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-gray-100 hover:bg-gray-200 
+           text-gray-900 rounded-lg transition-all 
+           shadow-sm hover:shadow-md
+           dark:bg-gray-800 dark:hover:bg-gray-700 
+           dark:text-gray-100 dark:shadow-gray-900/30;
+  }
 }
+
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
-}
-.glass-card {
-  background: rgba(255, 255, 255, 0.8);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
 
-.gradient-overlay {
+  .text-shadow {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
 
-  position: absolute;
-
-  inset: 0;
-
-  mix-blend-mode: overlay;
-
-  background: linear-gradient(45deg, var(--gradient-color-1), var(--gradient-color-2));
-
+  .dark .text-shadow {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
 }
 
 @keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 @keyframes shimmer {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }

@@ -109,7 +109,7 @@ export default function LinkShortenerPage() {
                 originalUrl={shortenedLink.originalUrl}
                 fullUrl={shortenedLink.fullUrl}
                 expiresAt={shortenedLink.expiresAt}
-                isPasswordProtected={shortenedLink.isPasswordProtected}
+                isPasswordProtected={shortenedLink.isPasswordProtected ?? false}
               />
             )}
           </div>

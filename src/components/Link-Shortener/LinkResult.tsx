@@ -3,10 +3,12 @@ import { useState } from 'react';
 import { Copy, Check, ExternalLink, Link2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
-interface LinkResultProps {
+export interface LinkResultProps {
   shortenedUrl: string;
   originalUrl: string;
   fullUrl: string;
+  expiresAt?: string;
+  isPasswordProtected: boolean;
 }
 
 export function LinkResult({ shortenedUrl, originalUrl, fullUrl }: LinkResultProps) {
