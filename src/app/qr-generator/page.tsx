@@ -10,14 +10,11 @@ import { StyleTab } from '@/components/QRCode/StyleTab';
 import { AdvancedTab } from '@/components/QRCode/AdvancedTab';
 import { TemplatesTab } from '@/components/QRCode/TemplatesTab';
 import { QRCodePreview } from '@/components/QRCode/QRCodePreview';
-import { QRTemplate, QROptions, QRDotType } from '@/types/qr';
+import { QRTemplate, QROptions } from '@/types/qr';
 import { QR_TEMPLATES } from '@/constants/qr-templates';
 import toast from 'react-hot-toast';
 
 const defaultOptions: QROptions = {
-  imageOptions: {
-    image: '',
-  },
   data: '',
   width: 300,
   height: 300,
@@ -72,10 +69,6 @@ export default function QRGeneratorPage() {
       updateOptions({
         ...template.options,
         data: options.data, // Preserve existing QR content
-        dotsOptions: {
-          ...template.options.dotsOptions,
-          type: template.options.dotsOptions.type as QRDotType,
-        },
       });
       setSelectedTemplateId(template.id);
     },
@@ -101,8 +94,7 @@ export default function QRGeneratorPage() {
       }
     } catch (error) {
       console.error('Download failed:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      toast.error(`Failed to download QR code: ${errorMessage}`);
+      toast.error(`Failed to download QR code: ${error.message}`);
     }
   };
 
@@ -118,7 +110,7 @@ export default function QRGeneratorPage() {
   console.log('Tabs:', tabs);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[rgb(var(--background-start))] to-[rgb(var(--background-end))]">
+    <div className="min-h-screen bg-gradient-to-b from-[rgb(var(--background-start))] to-[rgb(var(--background-end))] text-gray-900 dark:text-gray-100">
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold text-center bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text mb-8">
           QR Code Generator
@@ -126,7 +118,7 @@ export default function QRGeneratorPage() {
 
         <div className="grid lg:grid-cols-2 gap-8 items-start">
           {/* Left Column - Controls */}
-          <div className="space-y-6 max-h-[90vh] overflow-visible pr-2">
+          <div className="space-y-6 max-h-[90vh] overflow-auto pr-2">
             {/* QR Input - Always visible */}
             <QRInput 
               value={options.data} 
@@ -147,11 +139,7 @@ export default function QRGeneratorPage() {
                 }}
                 tabs={tabs}
                 aria-label="QR Code Generator Tabs"
-              >
-                {tabs.map(tab => (
-                  <div key={tab.id}>{tab.label}</div>
-                ))}
-              </Tabs>
+              />
             </div>
 
             {/* Tab Content */}
@@ -179,48 +167,39 @@ export default function QRGeneratorPage() {
                 />
               )}
 
-                {activeTab === 'style' && (
+              {activeTab === 'style' && (
                 <StyleTab
                   {...options}
-                  dotType={options.dotsOptions.type}
-                  dotsColor={options.dotsOptions.color}
-                  cornerSquareType={options.cornersSquareOptions.type as 'square' | 'extra-rounded' | 'dot'}
-                  cornerSquareColor={options.cornersSquareOptions.color}
-                  cornerDotType={options.cornersDotOptions.type as 'square' | 'dot'}
-                  cornerDotColor={options.cornersDotOptions.color}
-                  borderColor={options.borderOptions.color}
-                  borderWidth={options.borderOptions.width}
-                  borderRadius={options.borderOptions.radius}
                   onDotTypeChange={type => {
-                  console.log('Dot type change:', type);
-                  updateOptions({ dotsOptions: { ...options.dotsOptions, type } });
+                    console.log('Dot type change:', type);
+                    updateOptions({ dotsOptions: { ...options.dotsOptions, type } });
                   }}
                   onDotStyleChange={newOptions => {
-                  console.log('Dot style change:', newOptions);
-                  updateOptions({ dotsOptions: { ...options.dotsOptions, ...newOptions } });
+                    console.log('Dot style change:', newOptions);
+                    updateOptions({ dotsOptions: { ...options.dotsOptions, ...newOptions } });
                   }}
                   onCornerChange={changes => {
-                  console.log('Corner change:', changes);
-                  updateOptions({
-                    ...(changes.square && {
-                    cornersSquareOptions: { ...options.cornersSquareOptions, ...changes.square },
-                    }),
-                    ...(changes.dot && {
-                    cornersDotOptions: { ...options.cornersDotOptions, ...changes.dot },
-                    }),
-                  });
+                    console.log('Corner change:', changes);
+                    updateOptions({
+                      ...(changes.square && {
+                        cornersSquareOptions: { ...options.cornersSquareOptions, ...changes.square },
+                      }),
+                      ...(changes.dot && {
+                        cornersDotOptions: { ...options.cornersDotOptions, ...changes.dot },
+                      }),
+                    });
                   }}
                   onBorderChange={(value, property) => {
-                  console.log('Border change:', { value, property });
-                  updateOptions({
-                    borderOptions: {
-                    ...options.borderOptions,
-                    [property]: property === 'color' ? value : Number(value),
-                    },
-                  });
+                    console.log('Border change:', { value, property });
+                    updateOptions({
+                      borderOptions: {
+                        ...options.borderOptions,
+                        [property]: property === 'color' ? value : Number(value),
+                      },
+                    });
                   }}
                 />
-                )}
+              )}
 
               {activeTab === 'advanced' && (
                 <AdvancedTab
@@ -232,11 +211,7 @@ export default function QRGeneratorPage() {
                     updateOptions({ margin });
                   }}
                   onErrorCorrectionChange={level => {
-                    updateOptions({ 
-                      imageOptions: {
-                        ...options.imageOptions,
-                      }
-                    });
+                    console.log('Error correction level change:', level);
                     updateOptions({ errorCorrectionLevel: level });
                   }}
                   onImageOptionsChange={imageOptions => {
@@ -248,8 +223,8 @@ export default function QRGeneratorPage() {
             </div>
 
             {/* Quick Tips */}
-            <div className="glass-card p-4 rounded-lg sticky bottom-0 bg-white/80 backdrop-blur-sm">
-              <p className="text-sm text-gray-600">
+            <div className="glass-card p-4 rounded-lg sticky bottom-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 {activeTab === 'templates' && '💡 Choose a template as a starting point, then customize it in other tabs'}
                 {activeTab === 'basic' && '💡 Choose colors to match your brand or design'}
                 {activeTab === 'style' && '💡 Experiment with different dot styles and corner options'}

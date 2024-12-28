@@ -57,8 +57,8 @@ export function AdvancedTab({
   return (
     <div className="space-y-6">
       {/* Image Upload Section */}
-      <div className="glass-card p-6 rounded-lg">
-        <h3 className="text-lg font-semibold mb-4">Center Image</h3>
+      <div className="glass-card p-6 rounded-lg bg-white dark:bg-gray-800">
+        <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Center Image</h3>
         <div className="space-y-4">
           <div className="flex items-center gap-4">
             <input
@@ -93,10 +93,10 @@ export function AdvancedTab({
                 <img
                   src={imageOptions.source}
                   alt="Center logo preview"
-                  className="w-16 h-16 object-contain border rounded"
+                  className="w-16 h-16 object-contain border rounded border-gray-300 dark:border-gray-600"
                 />
                 <div className="flex-1">
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">
                     Image Size: {Math.round(imageOptions.imageSize * 100)}%
                   </label>
                   <input
@@ -115,7 +115,7 @@ export function AdvancedTab({
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">
                   Image Margin: {imageOptions.margin}px
                 </label>
                 <input
@@ -137,11 +137,11 @@ export function AdvancedTab({
       </div>
 
       {/* Other settings... */}
-      <div className="glass-card p-6 rounded-lg">
-        <h3 className="text-lg font-semibold mb-4">QR Settings</h3>
+      <div className="glass-card p-6 rounded-lg bg-white dark:bg-gray-800">
+        <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">QR Settings</h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">
               Margin Size: {margin}px
             </label>
             <input
@@ -156,13 +156,13 @@ export function AdvancedTab({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">
               Error Correction Level
             </label>
             <select
               value={errorCorrectionLevel}
               onChange={(e) => onErrorCorrectionChange(e.target.value as 'L' | 'M' | 'Q' | 'H')}
-              className="w-full p-2 rounded-md border"
+              className="w-full p-2 rounded-md border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
               title='Error Correction Level'
             >
               <option value="L">Low - 7% recovery</option>
@@ -170,7 +170,7 @@ export function AdvancedTab({
               <option value="Q">Quartile - 25% recovery</option>
               <option value="H">High - 30% recovery</option>
             </select>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               Higher levels allow for better recovery when using center images
             </p>
           </div>

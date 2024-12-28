@@ -54,8 +54,8 @@ export function StyleTab({
   return (
     <div className="space-y-6">
       {/* Dot Style */}
-      <div className="glass-card p-6 rounded-lg">
-        <h3 className="text-lg font-semibold mb-4">Dot Style</h3>
+      <div className="glass-card p-6 rounded-lg bg-white dark:bg-gray-800">
+        <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Dot Style</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
           {DOT_STYLES.map((style) => (
             <button
@@ -63,12 +63,12 @@ export function StyleTab({
               onClick={() => onDotTypeChange(style.value)}
               className={`p-3 border rounded-lg transition-colors flex flex-col items-center gap-2 ${
                 dotType === style.value
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-blue-300'
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-700 dark:border-blue-400'
+                  : 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500'
               }`}
             >
-              <style.icon className="w-5 h-5" />
-              <span className="text-sm">{style.label}</span>
+              <style.icon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+              <span className="text-sm text-gray-900 dark:text-gray-100">{style.label}</span>
             </button>
           ))}
         </div>
@@ -85,16 +85,16 @@ export function StyleTab({
                     onDotStyleChange({ color: dotsColor, gradient: undefined });
                   }
                 }}
-                className="w-4 h-4"
+                className="w-4 h-4 text-blue-500 dark:text-blue-400"
               />
-              <span className="text-sm font-medium">Use Gradient</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Use Gradient</span>
             </label>
           </div>
 
           {useGradient ? (
             <div className="space-y-3">
               <div>
-                <label className="block text-sm font-medium mb-2">Gradient Type</label>
+                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">Gradient Type</label>
                 <select
                   aria-label="Gradient Type"
                   value={dotsGradient?.type || 'linear'}
@@ -104,7 +104,7 @@ export function StyleTab({
                       type: e.target.value,
                     }
                   })}
-                  className="w-full p-2 rounded-md border"
+                  className="w-full p-2 rounded-md border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                 >
                   <option value="linear">Linear</option>
                   <option value="radial">Radial</option>
@@ -112,7 +112,7 @@ export function StyleTab({
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Start Color</label>
+                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">Start Color</label>
                 <input
                   type="color"
                   value={dotsGradient?.colorStops[0]?.color || '#000000'}
@@ -125,13 +125,13 @@ export function StyleTab({
                       ]
                     }
                   })}
-                  className="w-full p-2 rounded-md border"
+                  className="w-full p-2 rounded-md border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                   title='Start Color'
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">End Color</label>
+                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">End Color</label>
                 <input
                   type="color"
                   value={dotsGradient?.colorStops[1]?.color || '#000000'}
@@ -144,19 +144,19 @@ export function StyleTab({
                       ]
                     }
                   })}
-                  className="w-full p-2 rounded-md border"
+                  className="w-full p-2 rounded-md border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                   title='End Color'
                 />
               </div>
             </div>
           ) : (
             <div>
-              <label className="block text-sm font-medium mb-2">Dot Color</label>
+              <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">Dot Color</label>
               <input
                 type="color"
                 value={dotsColor}
                 onChange={(e) => onDotStyleChange({ color: e.target.value })}
-                className="w-full p-2 rounded-md border"
+                className="w-full p-2 rounded-md border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                 title='Dot Color'
               />
             </div>
@@ -165,17 +165,17 @@ export function StyleTab({
       </div>
 
       {/* Corner Style */}
-      <div className="glass-card p-6 rounded-lg">
-        <h3 className="text-lg font-semibold mb-4">Corner Style</h3>
+      <div className="glass-card p-6 rounded-lg bg-white dark:bg-gray-800">
+        <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Corner Style</h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Corner Square Style</label>
+            <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">Corner Square Style</label>
             <select
               value={cornerSquareType}
               onChange={(e) => onCornerChange({ 
                 square: { type: e.target.value as any, color: cornerSquareColor }
               })}
-              className="w-full p-2 rounded-md border"
+              className="w-full p-2 rounded-md border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
               title='Corner Square Style'
             >
               <option value="square">Square</option>
@@ -185,26 +185,26 @@ export function StyleTab({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Corner Square Color</label>
+            <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">Corner Square Color</label>
             <input
               type="color"
               value={cornerSquareColor}
               onChange={(e) => onCornerChange({ 
                 square: { type: cornerSquareType, color: e.target.value }
               })}
-              className="w-full p-2 rounded-md border"
+              className="w-full p-2 rounded-md border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
               title='Corner Square Color'
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Corner Dot Style</label>
+            <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">Corner Dot Style</label>
             <select
               value={cornerDotType}
               onChange={(e) => onCornerChange({ 
                 dot: { type: e.target.value as any, color: cornerDotColor }
               })}
-              className="w-full p-2 rounded-md border"
+              className="w-full p-2 rounded-md border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
               title="Corner Dot Style"
             >
               <option value="square">Square</option>
@@ -213,14 +213,14 @@ export function StyleTab({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Corner Dot Color</label>
+            <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">Corner Dot Color</label>
             <input
               type="color"
               value={cornerDotColor}
               onChange={(e) => onCornerChange({ 
                 dot: { type: cornerDotType, color: e.target.value }
               })}
-              className="w-full p-2 rounded-md border"
+              className="w-full p-2 rounded-md border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
               title='Corner Dot Color'
             />
           </div>
@@ -228,22 +228,22 @@ export function StyleTab({
       </div>
 
       {/* Border Options */}
-      <div className="glass-card p-6 rounded-lg">
-        <h3 className="text-lg font-semibold mb-4">Border Style</h3>
+      <div className="glass-card p-6 rounded-lg bg-white dark:bg-gray-800">
+        <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Border Style</h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Border Color</label>
+            <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">Border Color</label>
             <input
               type="color"
               value={borderColor}
               onChange={(e) => onBorderChange(e.target.value, 'color')}
-              className="w-full p-2 rounded-md border"
+              className="w-full p-2 rounded-md border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
               title='Border Color'
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">
               Border Radius: {borderRadius}px
             </label>
             <input
@@ -258,7 +258,7 @@ export function StyleTab({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">
               Border Width: {borderWidth}px
             </label>
             <input
