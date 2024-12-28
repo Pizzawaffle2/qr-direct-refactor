@@ -54,13 +54,35 @@ export interface QROptions {
   width: number;
   height: number;
   margin: number;
-  dotsOptions: QRDotsOptions;
-  cornersSquareOptions: QRCornersSquareOptions;
-  cornersDotOptions: QRCornersDotOptions;
-  backgroundOptions: QRBackgroundOptions;
-  borderOptions: QRBorderOptions;
-  errorCorrectionLevel: QRErrorCorrectionLevel;
-  imageOptions?: QRImageOptions;
+  dotsOptions: {
+    color: string;
+    type: QRDotType;
+    gradient?: Gradient;
+  };
+  cornersSquareOptions: {
+    type: string;
+    color: string;
+  };
+  cornersDotOptions: {
+    type: string;
+    color: string;
+  };
+  backgroundOptions: {
+    color: string;
+  };
+  borderOptions: {
+    color: string;
+    width: number;
+    radius: number;
+  };
+  errorCorrectionLevel: string;
+  imageOptions?: {
+    hideBackgroundDots?: boolean;
+    imageSize?: number;
+    margin?: number;
+    crossOrigin?: string;
+    image?: string;
+  };
 }
 
 export interface QRTemplate {

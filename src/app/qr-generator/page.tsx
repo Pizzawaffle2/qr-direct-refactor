@@ -1,7 +1,7 @@
 // src/app/qr-generator/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Tabs } from '@/components/UI/tabs';
 import { Palette, Image as ImageIcon, Sliders, Layout } from 'lucide-react';
 import { QRInput } from '@/components/QRCode/QRInput';
@@ -10,11 +10,14 @@ import { StyleTab } from '@/components/QRCode/StyleTab';
 import { AdvancedTab } from '@/components/QRCode/AdvancedTab';
 import { TemplatesTab } from '@/components/QRCode/TemplatesTab';
 import { QRCodePreview } from '@/components/QRCode/QRCodePreview';
-import { QRTemplate, QROptions } from '@/types/qr';
+import { QRTemplate, QROptions, QRDotType } from '@/types/qr';
 import { QR_TEMPLATES } from '@/constants/qr-templates';
 import toast from 'react-hot-toast';
 
 const defaultOptions: QROptions = {
+  imageOptions: {
+    image: '',
+  },
   data: '',
   width: 300,
   height: 300,
@@ -43,104 +46,45 @@ const defaultOptions: QROptions = {
 };
 
 export default function QRGeneratorPage() {
+  console.log('QRGeneratorPage rendered');
+
   const [activeTab, setActiveTab] = useState<'templates' | 'basic' | 'style' | 'advanced'>('templates');
+  console.log('Active tab:', activeTab);
+
   const [options, setOptions] = useState<QROptions>(defaultOptions);
+  console.log('QR options:', options);
+
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
+  console.log('Selected template ID:', selectedTemplateId);
 
-  // Templates tab handlers
-  const handleTemplateSelect = (template: QRTemplate) => {
-    setOptions(prev => ({
-      ...template.options,
-      data: prev.data, // Preserve existing QR content
-      dotsOptions: {
-        ...template.options.dotsOptions,
-        type: template.options.dotsOptions.type as QROptions['dotsOptions']['type'],
-      },
-      cornersSquareOptions: {
-        ...template.options.cornersSquareOptions,
-        type: template.options.cornersSquareOptions.type as QROptions['cornersSquareOptions']['type'],
-      },
-      cornersDotOptions: {
-        ...template.options.cornersDotOptions,
-        type: template.options.cornersDotOptions.type as QROptions['cornersDotOptions']['type'],
-      },
-    }));
-    setSelectedTemplateId(template.id);
-  };
+  // Helper functions
+  const updateOptions = useCallback(
+    (updates: Partial<QROptions>) => {
+      console.log('Updating options with:', updates);
+      setOptions(prev => ({ ...prev, ...updates }));
+    },
+    []
+  );
 
-  // Basic tab handlers
-  const handleDataChange = (data: string) => {
-    setOptions(prev => ({ ...prev, data }));
-  };
+  const handleTemplateSelect = useCallback(
+    (template: QRTemplate) => {
+      console.log('Template selected:', template);
+      updateOptions({
+        ...template.options,
+        data: options.data, // Preserve existing QR content
+        dotsOptions: {
+          ...template.options.dotsOptions,
+          type: template.options.dotsOptions.type as QRDotType,
+        },
+      });
+      setSelectedTemplateId(template.id);
+    },
+    [options.data, updateOptions]
+  );
 
-  const handleColorChange = (color: string, type: 'dots' | 'background') => {
-    setOptions(prev => ({
-      ...prev,
-      [type === 'dots' ? 'dotsOptions' : 'backgroundOptions']: {
-        ...prev[type === 'dots' ? 'dotsOptions' : 'backgroundOptions'],
-        color,
-      },
-    }));
-  };
-
-  // Style tab handlers
-  const handleDotTypeChange = (type: QROptions['dotsOptions']['type']) => {
-    setOptions(prev => ({
-      ...prev,
-      dotsOptions: { ...prev.dotsOptions, type },
-    }));
-  };
-
-  const handleDotStyleChange = (newOptions: Partial<QROptions['dotsOptions']>) => {
-    setOptions(prev => ({
-      ...prev,
-      dotsOptions: {
-        ...prev.dotsOptions,
-        ...newOptions,
-      },
-    }));
-  };
-
-  const handleCornerChange = (changes: {
-    square?: Partial<QROptions['cornersSquareOptions']>;
-    dot?: Partial<QROptions['cornersDotOptions']>;
-  }) => {
-    setOptions(prev => ({
-      ...prev,
-      ...(changes.square && { cornersSquareOptions: { ...prev.cornersSquareOptions, ...changes.square } }),
-      ...(changes.dot && { cornersDotOptions: { ...prev.cornersDotOptions, ...changes.dot } }),
-    }));
-  };
-
-  const handleBorderChange = (value: string | number, property: 'color' | 'radius' | 'width') => {
-    setOptions(prev => ({
-      ...prev,
-      borderOptions: {
-        ...prev.borderOptions,
-        [property]: property === 'color' ? value : Number(value),
-      },
-    }));
-  };
-
-  // Advanced tab handlers
-  const handleMarginChange = (margin: number) => {
-    setOptions(prev => ({ ...prev, margin }));
-  };
-
-  const handleErrorCorrectionChange = (level: 'L' | 'M' | 'Q' | 'H') => {
-    setOptions(prev => ({ ...prev, errorCorrectionLevel: level }));
-  };
-
-  const handleImageOptionsChange = (imageOptions?: QROptions['imageOptions']) => {
-    setOptions(prev => ({
-      ...prev,
-      imageOptions,
-    }));
-  };
-
-  // Download handler
   const handleDownload = async () => {
     try {
+      console.log('Download initiated');
       const qr = document.querySelector('#qr-code-container canvas');
       if (qr) {
         const dataUrl = (qr as HTMLCanvasElement).toDataURL('image/png');
@@ -151,11 +95,27 @@ export default function QRGeneratorPage() {
         link.click();
         document.body.removeChild(link);
         toast.success('QR code downloaded successfully!');
+        console.log('QR code downloaded successfully');
+      } else {
+        throw new Error('QR code canvas not found');
       }
     } catch (error) {
-      toast.error('Failed to download QR code');
+      console.error('Download failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to download QR code: ${errorMessage}`);
     }
   };
+
+  const tabs = useMemo(
+    () => [
+      { id: 'templates', label: 'Templates', icon: Layout },
+      { id: 'basic', label: 'Basic', icon: Palette },
+      { id: 'style', label: 'Style', icon: Sliders },
+      { id: 'advanced', label: 'Advanced', icon: ImageIcon },
+    ],
+    []
+  );
+  console.log('Tabs:', tabs);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[rgb(var(--background-start))] to-[rgb(var(--background-end))]">
@@ -166,25 +126,32 @@ export default function QRGeneratorPage() {
 
         <div className="grid lg:grid-cols-2 gap-8 items-start">
           {/* Left Column - Controls */}
-          <div className="space-y-6 max-h-[90vh] overflow-y-auto pr-2">
+          <div className="space-y-6 max-h-[90vh] overflow-visible pr-2">
             {/* QR Input - Always visible */}
             <QRInput 
               value={options.data} 
-              onChange={handleDataChange}
+              onChange={data => {
+                console.log('QR Input changed:', data);
+                updateOptions({ data });
+              }}
+              aria-label="QR Code Data Input"
             />
 
             {/* Tabs */}
             <div className="sticky top-0 z-10 bg-gradient-to-b from-[rgb(var(--background-start))] to-transparent pb-4">
               <Tabs
                 activeTab={activeTab}
-                onChange={(tab) => setActiveTab(tab as typeof activeTab)}
-                tabs={[
-                  { id: 'templates', label: 'Templates', icon: Layout },
-                  { id: 'basic', label: 'Basic', icon: Palette },
-                  { id: 'style', label: 'Style', icon: Sliders },
-                  { id: 'advanced', label: 'Advanced', icon: ImageIcon },
-                ]}
-              />
+                onChange={tab => {
+                  console.log('Tab changed to:', tab);
+                  setActiveTab(tab as typeof activeTab);
+                }}
+                tabs={tabs}
+                aria-label="QR Code Generator Tabs"
+              >
+                {tabs.map(tab => (
+                  <div key={tab.id}>{tab.label}</div>
+                ))}
+              </Tabs>
             </div>
 
             {/* Tab Content */}
@@ -200,37 +167,82 @@ export default function QRGeneratorPage() {
                 <BasicTab
                   dotsColor={options.dotsOptions.color}
                   backgroundColor={options.backgroundOptions.color}
-                  onColorChange={handleColorChange}
+                  onColorChange={(color, type) => {
+                    console.log('Color change:', { color, type });
+                    updateOptions({
+                      [type === 'dots' ? 'dotsOptions' : 'backgroundOptions']: {
+                        ...options[type === 'dots' ? 'dotsOptions' : 'backgroundOptions'],
+                        color,
+                      },
+                    });
+                  }}
                 />
               )}
 
-              {activeTab === 'style' && (
+                {activeTab === 'style' && (
                 <StyleTab
+                  {...options}
                   dotType={options.dotsOptions.type}
                   dotsColor={options.dotsOptions.color}
-                  dotsGradient={options.dotsOptions.gradient}
-                  cornerSquareType={options.cornersSquareOptions.type}
+                  cornerSquareType={options.cornersSquareOptions.type as 'square' | 'extra-rounded' | 'dot'}
                   cornerSquareColor={options.cornersSquareOptions.color}
-                  cornerDotType={options.cornersDotOptions.type}
+                  cornerDotType={options.cornersDotOptions.type as 'square' | 'dot'}
                   cornerDotColor={options.cornersDotOptions.color}
                   borderColor={options.borderOptions.color}
-                  borderRadius={options.borderOptions.radius}
                   borderWidth={options.borderOptions.width}
-                  onDotTypeChange={handleDotTypeChange}
-                  onDotStyleChange={handleDotStyleChange}
-                  onCornerChange={handleCornerChange}
-                  onBorderChange={handleBorderChange}
+                  borderRadius={options.borderOptions.radius}
+                  onDotTypeChange={type => {
+                  console.log('Dot type change:', type);
+                  updateOptions({ dotsOptions: { ...options.dotsOptions, type } });
+                  }}
+                  onDotStyleChange={newOptions => {
+                  console.log('Dot style change:', newOptions);
+                  updateOptions({ dotsOptions: { ...options.dotsOptions, ...newOptions } });
+                  }}
+                  onCornerChange={changes => {
+                  console.log('Corner change:', changes);
+                  updateOptions({
+                    ...(changes.square && {
+                    cornersSquareOptions: { ...options.cornersSquareOptions, ...changes.square },
+                    }),
+                    ...(changes.dot && {
+                    cornersDotOptions: { ...options.cornersDotOptions, ...changes.dot },
+                    }),
+                  });
+                  }}
+                  onBorderChange={(value, property) => {
+                  console.log('Border change:', { value, property });
+                  updateOptions({
+                    borderOptions: {
+                    ...options.borderOptions,
+                    [property]: property === 'color' ? value : Number(value),
+                    },
+                  });
+                  }}
                 />
-              )}
+                )}
 
               {activeTab === 'advanced' && (
                 <AdvancedTab
                   margin={options.margin}
                   errorCorrectionLevel={options.errorCorrectionLevel}
                   imageOptions={options.imageOptions}
-                  onMarginChange={handleMarginChange}
-                  onErrorCorrectionChange={handleErrorCorrectionChange}
-                  onImageOptionsChange={handleImageOptionsChange}
+                  onMarginChange={margin => {
+                    console.log('Margin change:', margin);
+                    updateOptions({ margin });
+                  }}
+                  onErrorCorrectionChange={level => {
+                    updateOptions({ 
+                      imageOptions: {
+                        ...options.imageOptions,
+                      }
+                    });
+                    updateOptions({ errorCorrectionLevel: level });
+                  }}
+                  onImageOptionsChange={imageOptions => {
+                    console.log('Image options change:', imageOptions);
+                    updateOptions({ imageOptions });
+                  }}
                 />
               )}
             </div>
