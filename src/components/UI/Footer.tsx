@@ -2,7 +2,10 @@
 'use client';
 
 import Link from 'next/link';
-import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
+import { Github, Twitter, Linkedin, Mail, Sun, Moon, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { BsTwitterX } from "react-icons/bs";
+
 
 const FOOTER_LINKS = {
   product: [
@@ -27,12 +30,25 @@ const FOOTER_LINKS = {
 
 const SOCIAL_LINKS = [
   { icon: Github, href: 'https://github.com', label: 'GitHub' },
-  { icon: Twitter, href: 'https://twitter.com', label: 'Twitter' },
-  { icon: Linkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
+  { icon: BsTwitterX, href: 'https://twitter.com', label: 'Twitter' },
+  { icon: Linkedin, href: 'https://www.linkedin.com/company/104994608', label: 'LinkedIn' },
   { icon: Mail, href: 'mailto:contact@example.com', label: 'Email' }
 ];
 
 export default function Footer() {
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setDarkMode(isDarkMode);
+    document.documentElement.classList.toggle('dark', isDarkMode);
+  }, []);
+
+  const toggleDarkMode = () => {
+    setDarkMode((prev) => !prev);
+    document.documentElement.classList.toggle('dark');
+  };
+
   return (
     <footer className="relative z-10">
       <div className="glass-card border-0 rounded-none border-t border-gray-200/30 dark:border-gray-700/30">
@@ -115,10 +131,17 @@ export default function Footer() {
           </div>
 
           {/* Bottom Bar */}
-          <div className="border-t border-gray-200/30 dark:border-gray-700/30 pt-8 text-center">
+          <div className="border-t border-gray-200/30 dark:border-gray-700/30 pt-8 flex justify-between items-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               &copy; {new Date().getFullYear()} QR Direct. All rights reserved.
             </p>
+            <button
+              onClick={toggleDarkMode}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            >
+              {darkMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+              {darkMode ? 'Dark Mode' : 'Light Mode'}
+            </button>
           </div>
         </div>
       </div>

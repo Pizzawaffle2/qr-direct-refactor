@@ -44,7 +44,6 @@ export function QRCodePreview({ options, onDownload }: PreviewProps) {
           crossOrigin: 'anonymous',
         },
       }),
-      // Add border options
       borderOptions: {
         width: options.borderOptions.width,
         color: options.borderOptions.color,
@@ -53,7 +52,7 @@ export function QRCodePreview({ options, onDownload }: PreviewProps) {
     };
 
     qrCode.current = new QRCodeStyling(updatedOptions);
-    
+
     if (qrRef.current) {
       qrRef.current.innerHTML = '';
       qrCode.current.append(qrRef.current);
@@ -91,15 +90,15 @@ export function QRCodePreview({ options, onDownload }: PreviewProps) {
   };
 
   return (
-    <div className={`glass-card p-6 rounded-lg transition-all ${
-      isExpanded ? 'fixed inset-4 z-50 bg-white/95 backdrop-blur-sm' : ''
+    <div className={`glass-card p-6 rounded-lg transition-all bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ${
+      isExpanded ? 'fixed inset-4 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm' : ''
     }`}>
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold">Preview</h3>
         <div className="flex gap-2">
           <button
             onClick={() => handleResize(false)}
-            className="p-2 hover:bg-gray-100 rounded-lg"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
             title="Decrease size"
             disabled={previewSize <= 200}
           >
@@ -107,7 +106,7 @@ export function QRCodePreview({ options, onDownload }: PreviewProps) {
           </button>
           <button
             onClick={() => handleResize(true)}
-            className="p-2 hover:bg-gray-100 rounded-lg"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
             title="Increase size"
             disabled={previewSize >= 600}
           >
@@ -115,7 +114,7 @@ export function QRCodePreview({ options, onDownload }: PreviewProps) {
           </button>
         </div>
       </div>
-      <div className="bg-white rounded-lg p-4 flex items-center justify-center">
+      <div className="bg-white dark:bg-gray-900 rounded-lg p-4 flex items-center justify-center">
         <div
           id="qr-code-container"
           ref={qrRef}
@@ -133,7 +132,7 @@ export function QRCodePreview({ options, onDownload }: PreviewProps) {
         </button>
         <button
           onClick={handleCopyToClipboard}
-          className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
           title="Copy to clipboard"
         >
           <Copy className="w-5 h-5" />

@@ -17,7 +17,7 @@ export function BasicTab({
   return (
     <div className="space-y-4 overflow-visible">
       {/* Colors Section */}
-      <div className="glass-card rounded-lg divide-y divide-gray-200 dark:divide-gray-700 overflow-visible">
+      <div className="glass-card rounded-lg divide-y divide-gray-200 dark:divide-gray-700 overflow-visible bg-white dark:bg-gray-800">
         {/* QR Code Color */}
         <div className="p-4 overflow-visible">
           <div className="flex justify-between items-center mb-2">
@@ -66,7 +66,7 @@ export function BasicTab({
       </div>
   
       {/* Color Combinations */}
-      <div className="glass-card p-4 rounded-lg">
+      <div className="glass-card p-4 rounded-lg bg-white dark:bg-gray-800">
         <div className="mb-3">
           <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Quick Combinations
@@ -90,7 +90,7 @@ export function BasicTab({
               }}
               className="flex flex-col items-center p-2 rounded-lg border border-gray-200 
                        dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-400 
-                       transition-colors group"
+                       transition-colors group bg-white dark:bg-gray-800"
             >
               <div className="flex gap-1 mb-1">
                 <div 
