@@ -1,22 +1,16 @@
-// src/app/layout.tsx
-import './globals.css'
-import type { Metadata } from 'next'
-import { UserProvider } from '@auth0/nextjs-auth0/client'
-import { ThemeProvider } from '@/components/Theme/ThemeProvider'
-import { Analytics } from '@vercel/analytics/react'
-import { Toaster } from 'react-hot-toast'
-import ErrorBoundary from '@/components/ErrorBoundary'
-import Layout from '@/components/UI/Layout'
-// import { generateViewport } from 'next'
+import './globals.css';
+import type { Metadata } from 'next';
+import Layout from '@/components/UI/Layout';
+import Providers from '@/components/providers/Providers';
 
 export const metadata: Metadata = {
   title: 'QR Direct',
-  description: 'Generate, customize, and track dynamic QR codes for your business and events',
+  description: 'Generate, customize, and track dynamic QR codes for your business and events.',
   keywords: 'QR code, QR generator, dynamic QR codes, QR tracking, QR analytics',
   authors: [{ name: 'QR Direct Team' }],
   openGraph: {
     title: 'QR Direct - Dynamic QR Code Generator',
-    description: 'Create customizable QR codes for your business and events',
+    description: 'Create customizable QR codes for your business and events.',
     url: 'https://qr-direct.com',
     siteName: 'QR Direct',
     images: [
@@ -33,7 +27,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'QR Direct - Dynamic QR Code Generator',
-    description: 'Create customizable QR codes for your business and events',
+    description: 'Create customizable QR codes for your business and events.',
     images: ['/twitter-image.png'],
     creator: '@qrdirect',
   },
@@ -49,30 +43,19 @@ export const metadata: Metadata = {
   manifest: '/site.webmanifest',
 };
 
-export const generateViewport = () => ({
+export const viewport = {
   width: 'device-width',
   initialScale: 1,
-});
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head />
       <body>
-        <ErrorBoundary>
-          <ThemeProvider>
-            <UserProvider>
-              <Layout>
-                {children}
-              </Layout>
-              <Toaster position="top-right" />
-              <Analytics />
-            </UserProvider>
-          </ThemeProvider>
-        </ErrorBoundary>
+        <Providers>
+          <Layout>{children}</Layout>
+        </Providers>
       </body>
     </html>
   );

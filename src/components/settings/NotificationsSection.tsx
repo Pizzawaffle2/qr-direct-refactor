@@ -211,6 +211,7 @@ export function NotificationsSection() {
             <select
               className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               defaultValue="monday"
+              title="Select the day for weekly summary"
             >
               <option value="sunday">Sunday</option>
               <option value="monday">Monday</option>
@@ -224,6 +225,7 @@ export function NotificationsSection() {
               <div className="text-sm text-gray-600">Set your preferred time zone for notifications</div>
             </div>
             <select
+              title="Select your preferred time zone"
               className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               defaultValue="UTC"
             >

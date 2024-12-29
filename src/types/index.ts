@@ -9,6 +9,6 @@ export interface User {
   export interface AnalyticsEvent {
     bioPageId: string;
     event: string;
-    data?: Record<string, any>;
+    data?: Record<string, unknown>;
     timestamp: Date;
   }

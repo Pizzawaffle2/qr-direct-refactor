@@ -1,9 +1,10 @@
 // src/components/ui/card.tsx
 import { ReactNode } from 'react';
 
-interface CardProps {
+export interface CardProps {
   children: ReactNode;
   className?: string;
+  onClick?: () => void;
 }
 
 interface CardHeaderProps {
@@ -16,9 +17,9 @@ interface CardContentProps {
   className?: string;
 }
 
-export const Card = ({ children, className }: CardProps) => {
+export const Card = ({ children, className, onClick }: CardProps) => {
   return (
-    <div className={`p-4 rounded-lg shadow-md bg-white dark:bg-gray-800 ${className}`}>
+    <div className={`p-4 rounded-lg shadow-md bg-white dark:bg-gray-800 ${className}`} onClick={onClick}>
       {children}
     </div>
   );
