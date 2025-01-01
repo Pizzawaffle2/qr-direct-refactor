@@ -1,22 +1,23 @@
+// src/components/calendar/style-editor.tsx
 'use client';
 
-import { Tabs } from '@/components/UI/tabs';
+import React from 'react';
 import { Label } from '@/components/UI/Label';
-import Slider from '@/components/UI/Slider';
-import InputField from '@/components/UI/InputField';
+import { Input } from '@/components/UI/input';
 import Switch from '@/components/UI/Switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/UI/Select';
+import { Card } from '@/components/UI/Card';
 import { ColorPicker } from '@/components/UI/ColorPicker';
-import { Palette, Layout, Type, Settings } from 'lucide-react';
+import { Palette, Layout, Settings } from 'lucide-react';
+import { Tabs, TabContent } from '@/components/UI/tabs';
+import { CalendarSettings, ThemeColors } from '@/types/calendar';
 
 interface StyleEditorProps {
   value: {
-    firstDayOfWeek: 0 | 1;
+    firstDayOfWeek: '0' | '1';
     showWeekNumbers: boolean;
     theme: {
-      colors: {
-        primary: string;
-        background: string;
-      }
+      colors: ThemeColors;
     };
     monthsPerRow: number;
     options: {
@@ -26,159 +27,196 @@ interface StyleEditorProps {
       showNotes: boolean;
     }
   };
-  onChange: (value: any) => void;
+  onChange: (settings: Partial<CalendarSettings>) => void;
 }
 
-export function CalendarStyleEditor({ value, onChange }: StyleEditorProps) {
-  const defaultValue = {
-    firstDayOfWeek: 0,
-    showWeekNumbers: false,
-    theme: {
-      colors: {
-        primary: '',
-        background: ''
-      }
-    },
-    monthsPerRow: 1,
-    options: {
-      showLunarPhases: false,
-      showHolidays: false,
-      showWeather: false,
-      showNotes: false
-    }
+const TABS = [
+  { id: 'colors', label: 'Colors', icon: Palette },
+  { id: 'layout', label: 'Layout', icon: Layout },
+  { id: 'features', label: 'Features', icon: Settings }
+];
+
+export function StyleEditor({ value, onChange }: StyleEditorProps) {
+  const [activeTab, setActiveTab] = React.useState('colors');
+  
+  // Ensure options exist with default values
+  value.options = value.options || {
+    showLunarPhases: false,
+    showHolidays: false,
+    showWeather: false,
+    showNotes: false
   };
 
-  const mergedValue = { ...defaultValue, ...value };
-
-  const tabs = [
-    { id: 'theme', label: 'Theme', icon: Palette },
-    { id: 'layout', label: 'Layout', icon: Layout },
-    { id: 'features', label: 'Features', icon: Settings }
-  ];
-
-  const updateValue = (path: (string | number)[], newValue: any) => {
-    const newSettings = { ...mergedValue };
-    let current = newSettings;
+  const updateValue = (path: string[], newValue: any) => {
+    const newSettings = { ...value };
+    let current: any = newSettings;
+    
     for (let i = 0; i < path.length - 1; i++) {
-      current = current[path[i] as keyof typeof defaultValue] as any;
+      if (!current[path[i]]) {
+        current[path[i]] = {};
+      }
+      current = current[path[i]];
     }
-    (current as any)[path[path.length - 1]] = newValue;
+    
+    current[path[path.length - 1]] = newValue;
     onChange(newSettings);
   };
 
+  const handleColorChange = (colorKey: string, newColor: string) => {
+    updateValue(['theme', 'colors', colorKey], newColor);
+  };
+
+  const handleOptionChange = (optionKey: string, newValue: boolean) => {
+    updateValue(['options', optionKey], newValue);
+  };
+
   return (
-    <Tabs
-      activeTab="theme"
-      onChange={() => {}}
-      tabs={tabs}
-    >
-      {/* Theme Settings */}
-      <div className="space-y-6">
-        <div className="space-y-4">
-          <div>
-            <Label>Colors</Label>
-            <div className="grid gap-4 mt-2">
-              <div>
-                <Label>Primary</Label>
-                <ColorPicker
-                  color={mergedValue.theme.colors.primary}
-                  onChange={(color) => updateValue(['theme', 'colors', 'primary'], color)}
-                />
-              </div>
-              <div>
-                <Label>Background</Label>
-                <ColorPicker
-                  color={mergedValue.theme.colors.background}
-                  onChange={(color) => updateValue(['theme', 'colors', 'background'], color)}
-                />
+    <div className="space-y-6">
+      <Tabs
+        activeTab={activeTab}
+        onChange={setActiveTab}
+        tabs={TABS}
+      >
+        <TabContent tabId="colors" activeTab={activeTab}>
+          <Card className="p-4">
+            <div className="space-y-4">
+              <h3 className="font-medium">Color Settings</h3>
+              
+              {Object.entries(value.theme?.colors ?? {}).map(([key, color]) => (
+                <div key={key} className="grid gap-2">
+                  <Label className="capitalize">
+                    {key.replace(/([A-Z])/g, ' $1').trim()}
+                  </Label>
+                  <div className="flex gap-2">
+                    <ColorPicker
+                      color={color}
+                      onChange={(newColor) => handleColorChange(key, newColor)}
+                    />
+                    <Input
+                      value={color}
+                      onChange={(e) => handleColorChange(key, e.target.value)}
+                      className="flex-1"
+                      placeholder={`Enter ${key} color`}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </TabContent>
+
+        <TabContent tabId="layout" activeTab={activeTab}>
+          <Card className="p-4">
+            <div className="space-y-4">
+              <h3 className="font-medium">Layout Settings</h3>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>First Day of Week</Label>
+                    <p className="text-sm text-gray-500">Choose starting day</p>
+                  </div>
+                  <Select
+                    value={value.firstDayOfWeek}
+                    onValueChange={(val: '0' | '1') => 
+                      updateValue(['firstDayOfWeek'], val)
+                    }
+                  >
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0">Sunday</SelectItem>
+                      <SelectItem value="1">Monday</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Week Numbers</Label>
+                    <p className="text-sm text-gray-500">Show week numbers</p>
+                  </div>
+                  <Switch
+                    isChecked={value.showWeekNumbers}
+                    onCheckedChange={(checked: boolean) => 
+                      updateValue(['showWeekNumbers'], checked)
+                    }
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Months per Row</Label>
+                    <p className="text-sm text-gray-500">Display multiple months</p>
+                  </div>
+                  <Select
+                    value={(value.monthsPerRow ?? 1).toString()}
+                    onValueChange={(val) => 
+                      updateValue(['monthsPerRow'], parseInt(val))
+                    }
+                  >
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">One</SelectItem>
+                      <SelectItem value="2">Two</SelectItem>
+                      <SelectItem value="3">Three</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </Card>
+        </TabContent>
 
-      {/* Layout Settings */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <Label>Start Week on Monday</Label>
-            <p className="text-sm text-gray-500">Change first day of the week</p>
-          </div>
-          <Switch
-            isChecked={mergedValue.firstDayOfWeek === 1}
-            onChange={(checked) => updateValue(['firstDayOfWeek'], checked ? 1 : 0)}
-          />
-        </div>
+        <TabContent tabId="features" activeTab={activeTab}>
+          <Card className="p-4">
+            <div className="space-y-4">
+              <h3 className="font-medium">Features</h3>
 
-        <div className="flex items-center justify-between">
-          <div>
-            <Label>Show Week Numbers</Label>
-            <p className="text-sm text-gray-500">Display week numbers in calendar</p>
-          </div>
-          <Switch
-            isChecked={mergedValue.showWeekNumbers}
-            onChange={(checked) => updateValue(['showWeekNumbers'], checked)}
-          />
-        </div>
-
-        <div>
-          <Label>Month Layout ({mergedValue.monthsPerRow} per row)</Label>
-          <Slider
-            value={mergedValue.monthsPerRow}
-            onChange={(value) => updateValue(['monthsPerRow'], value)}
-            min={1}
-            max={4}
-            step={1}
-          />
-        </div>
-      </div>
-
-      {/* Features Settings */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <Label>Lunar Phases</Label>
-            <p className="text-sm text-gray-500">Show moon phases in calendar</p>
-          </div>
-          <Switch
-            isChecked={mergedValue.options.showLunarPhases}
-            onChange={(checked) => updateValue(['options', 'showLunarPhases'], checked)}
-          />
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div>
-            <Label>Holidays</Label>
-            <p className="text-sm text-gray-500">Display holidays and special dates</p>
-          </div>
-          <Switch
-            isChecked={mergedValue.options.showHolidays}
-            onChange={(checked) => updateValue(['options', 'showHolidays'], checked)}
-          />
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div>
-            <Label>Weather</Label>
-            <p className="text-sm text-gray-500">Show weather information</p>
-          </div>
-          <Switch
-            isChecked={mergedValue.options.showWeather}
-            onChange={(checked) => updateValue(['options', 'showWeather'], checked)}
-          />
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div>
-            <Label>Notes Section</Label>
-            <p className="text-sm text-gray-500">Add notes area to calendar</p>
-          </div>
-          <Switch
-            isChecked={mergedValue.options.showNotes}
-            onChange={(checked) => updateValue(['options', 'showNotes'], checked)}
-          />
-        </div>
-      </div>
-    </Tabs>
+              {[
+                {
+                  key: 'showLunarPhases',
+                  label: 'Lunar Phases',
+                  description: 'Show moon phases'
+                },
+                {
+                  key: 'showHolidays',
+                  label: 'Holidays',
+                  description: 'Display holidays'
+                },
+                {
+                  key: 'showWeather',
+                  label: 'Weather',
+                  description: 'Show weather info'
+                },
+                {
+                  key: 'showNotes',
+                  label: 'Notes',
+                  description: 'Enable note taking'
+                }
+              ].map(({ key, label, description }: { key: keyof typeof value.options, label: string, description: string }) => (
+                <div key={key} className="flex items-center justify-between">
+                  <div>
+                    <Label>{label}</Label>
+                    <p className="text-sm text-gray-500">{description}</p>
+                  </div>
+                  <Switch
+                    isChecked={value.options[key]}
+                    onCheckedChange={(checked: boolean) => 
+                      handleOptionChange(key, checked)
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+          </Card>
+        </TabContent>
+      </Tabs>
+    </div>
   );
 }
+
+export default StyleEditor;

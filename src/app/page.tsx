@@ -15,7 +15,7 @@ export default function Home() {
       bgColor: 'bg-blue-500/10 dark:bg-blue-400/10' 
     },
     { 
-      href: '/calendars', 
+      href: '/calendar-maker', 
       title: 'Calendar Maker', 
       description: 'Create and design beautiful calendars and scheduling links that integrate with any calendar.', 
       icon: Calendar, 
