@@ -12,22 +12,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card } from '@/components/UI/Card';
 import { Textarea } from '@/components/UI/Textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/UI/Popover';
-import { 
-  Calendar as CalendarIcon, 
-  Search,
-  Plus,
-  Trash2,
-  Edit2,
-  X,
-  Tag
-} from 'lucide-react';
+import { Calendar as CalendarIcon, Search, Plus, Trash2, Edit2, X, Tag } from 'lucide-react';
 
-const EVENT_TYPES: { value: EventType; label: string; color: string }[] = [
-  { value: 'event', label: 'Event', color: '#3B82F6' },
-  { value: 'reminder', label: 'Reminder', color: '#F59E0B' },
-  { value: 'task', label: 'Task', color: '#10B981' },
-  { value: 'birthday', label: 'Birthday', color: '#EC4899' },
-  { value: 'holiday', label: 'Holiday', color: '#8B5CF6' }
+const EVENT_TYPES = [
+  { value: 'event' as EventType, label: 'Event', color: '#3B82F6' },
+  { value: 'reminder' as EventType, label: 'Reminder', color: '#F59E0B' },
+  { value: 'task' as EventType, label: 'Task', color: '#10B981' },
+  { value: 'birthday' as EventType, label: 'Birthday', color: '#EC4899' },
+  { value: 'holiday' as EventType, label: 'Holiday', color: '#8B5CF6' }
 ];
 
 interface EventPanelProps {
@@ -37,12 +29,7 @@ interface EventPanelProps {
   onDeleteEvent: (eventId: string) => void;
 }
 
-export function EventPanel({
-  events,
-  onAddEvent,
-  onUpdateEvent,
-  onDeleteEvent
-}: EventPanelProps) {
+export function EventPanel({ events, onAddEvent, onUpdateEvent, onDeleteEvent }: EventPanelProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<EventType | 'all'>('all');
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
@@ -54,7 +41,6 @@ export function EventPanel({
     color: EVENT_TYPES[0].color
   });
 
-  // Filter events based on search term and type
   const filteredEvents = useMemo(() => {
     return events.filter(event => {
       const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -65,12 +51,10 @@ export function EventPanel({
 
   const handleAddEvent = () => {
     if (!newEvent.title) return;
-
     onAddEvent({
       ...newEvent as CalendarEvent,
       id: crypto.randomUUID()
     });
-
     setNewEvent({
       title: '',
       date: new Date(),
@@ -80,15 +64,8 @@ export function EventPanel({
     setShowAddForm(false);
   };
 
-  const handleUpdateEvent = () => {
-    if (!editingEvent) return;
-    onUpdateEvent(editingEvent);
-    setEditingEvent(null);
-  };
-
   return (
     <div className="space-y-4">
-      {/* Search and Filter */}
       <div className="space-y-2">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -118,23 +95,19 @@ export function EventPanel({
             </SelectContent>
           </Select>
 
-          <Button
-            onClick={() => setShowAddForm(true)}
-            className="flex-shrink-0"
-          >
+          <Button onClick={() => setShowAddForm(true)} className="flex-shrink-0">
             <Plus className="mr-2 h-4 w-4" />
             Add Event
           </Button>
         </div>
       </div>
 
-      {/* Event List */}
       <div className="space-y-2">
         {filteredEvents.map(event => (
           <Card
             key={event.id}
-            className="flex items-center justify-between p-3"
-            style={{ borderLeftColor: event.color, borderLeftWidth: '4px' }}
+            className={`flex items-center justify-between p-3 border-l-4`}
+            style={{"--event-color": event.color} as React.CSSProperties}
           >
             <div className="flex-1 min-w-0">
               <h4 className="font-medium truncate">{event.title}</h4>
@@ -172,7 +145,6 @@ export function EventPanel({
         )}
       </div>
 
-      {/* Add Event Form */}
       {showAddForm && (
         <Card className="p-4 space-y-4">
           <div className="flex items-center justify-between">
@@ -188,9 +160,8 @@ export function EventPanel({
 
           <div className="space-y-4">
             <div>
-              <Label htmlFor="title">Title</Label>
+              <Label>Title</Label>
               <Input
-                id="title"
                 value={newEvent.title}
                 onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
                 placeholder="Enter event title"
@@ -243,9 +214,8 @@ export function EventPanel({
             </div>
 
             <div>
-              <Label htmlFor="description">Description (Optional)</Label>
+              <Label>Description (Optional)</Label>
               <Textarea
-                id="description"
                 value={newEvent.description || ''}
                 onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
                 placeholder="Add event description"
@@ -265,109 +235,6 @@ export function EventPanel({
                 disabled={!newEvent.title}
               >
                 Add Event
-              </Button>
-            </div>
-          </div>
-        </Card>
-      )}
-
-      {/* Edit Event Modal */}
-      {editingEvent && (
-        <Card className="p-4 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="font-medium">Edit Event</h3>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setEditingEvent(null)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="edit-title">Title</Label>
-              <Input
-                id="edit-title"
-                value={editingEvent.title}
-                onChange={(e) => setEditingEvent({ 
-                  ...editingEvent, 
-                  title: e.target.value 
-                })}
-              />
-            </div>
-
-            <div>
-              <Label>Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {format(new Date(editingEvent.date), 'PPP')}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={new Date(editingEvent.date)}
-                    onSelect={(date) => date && setEditingEvent({ 
-                      ...editingEvent, 
-                      date 
-                    })}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <div>
-              <Label>Type</Label>
-              <Select
-                value={editingEvent.type}
-                onValueChange={(value) => setEditingEvent({ 
-                  ...editingEvent, 
-                  type: value as EventType,
-                  color: EVENT_TYPES.find(t => t.value === value)?.color
-                })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {EVENT_TYPES.map(type => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="edit-description">Description</Label>
-              <Textarea
-                id="edit-description"
-                value={editingEvent.description || ''}
-                onChange={(e) => setEditingEvent({ 
-                  ...editingEvent, 
-                  description: e.target.value 
-                })}
-                rows={3}
-              />
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setEditingEvent(null)}
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleUpdateEvent}>
-                Save Changes
               </Button>
             </div>
           </div>
