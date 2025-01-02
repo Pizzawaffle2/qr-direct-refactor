@@ -8,6 +8,11 @@ import { cn } from '@/lib/utils';
 // SVG Patterns for different themes and seasons
 export const FRAME_PATTERNS = {
   // Basic Patterns
+  none: `
+    <pattern id="none" patternUnits="userSpaceOnUse" width="60" height="60">
+      <path d="M0 0h60v60H0z" fill="none"/>
+    </pattern>
+  `,
   basic: `
     <pattern id="basic" patternUnits="userSpaceOnUse" width="40" height="40">
       <circle cx="20" cy="20" r="1" fill="currentColor" opacity="0.1"/>

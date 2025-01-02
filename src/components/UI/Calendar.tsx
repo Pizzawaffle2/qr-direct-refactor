@@ -19,7 +19,7 @@ function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn('p-3', className)}
+      className={cn('p-3 bg-[rgb(var(--background-start))] text-[rgb(var(--foreground))] dark:bg-[rgb(var(--background-end))] dark:text-[rgb(var(--foreground))]', className)}
       classNames={{
         months: 'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
         month: 'space-y-4',
@@ -28,7 +28,7 @@ function Calendar({
         nav: 'space-x-1 flex items-center',
         nav_button: cn(
           buttonVariants({ variant: 'outline' }),
-          'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100'
+          'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 dark:hover:opacity-100'
         ),
         nav_button_previous: 'absolute left-1',
         nav_button_next: 'absolute right-1',
@@ -37,20 +37,20 @@ function Calendar({
         head_cell: 'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]',
         row: 'flex w-full mt-2',
         cell: cn(
-          'relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent',
+          'relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent dark:[&:has([aria-selected])]:bg-accent',
           'first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md'
         ),
         day: cn(
           buttonVariants({ variant: 'ghost' }),
-          'h-9 w-9 p-0 font-normal aria-selected:opacity-100'
+          'h-9 w-9 p-0 font-normal aria-selected:opacity-100 dark:aria-selected:opacity-100'
         ),
         day_selected:
-          'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground',
-        day_today: 'bg-accent text-accent-foreground',
-        day_outside: 'text-muted-foreground opacity-50',
-        day_disabled: 'text-muted-foreground opacity-50',
+          'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary dark:hover:text-primary-foreground dark:focus:bg-primary dark:focus:text-primary-foreground',
+        day_today: 'bg-accent text-accent-foreground dark:bg-accent dark:text-accent-foreground',
+        day_outside: 'text-muted-foreground opacity-50 dark:text-muted-foreground dark:opacity-50',
+        day_disabled: 'text-muted-foreground opacity-50 dark:text-muted-foreground dark:opacity-50',
         day_range_middle:
-          'aria-selected:bg-accent aria-selected:text-accent-foreground',
+          'aria-selected:bg-accent aria-selected:text-accent-foreground dark:aria-selected:bg-accent dark:aria-selected:text-accent-foreground',
         day_hidden: 'invisible',
         ...classNames,
       }}
@@ -123,7 +123,7 @@ export function DateTimePicker({
         <input
           id="time-input"
           type="time"
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-background dark:border-input dark:ring-offset-background"
           value={
             selectedDateTime
               ? `${String(selectedDateTime.getHours()).padStart(2, '0')}:${String(

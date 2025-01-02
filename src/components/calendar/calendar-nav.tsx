@@ -1,193 +1,165 @@
-// src/components/calendar/calendar-nav.tsx
+// src/components/UI/Calendar.tsx
 'use client';
 
-import React from 'react';
-import { format, addMonths, subMonths } from 'date-fns';
+import * as React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/UI/Button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/UI/Select';
-import { CalendarViewMode } from '@/types/calendar';
+import { DayPicker, DropdownProps } from 'react-day-picker';
+import { DateRange } from 'react-day-picker';
+import { buttonVariants } from '@/components/UI/Button';
+import { cn } from '@/lib/utils';
 
-interface CalendarNavProps {
-  currentMonth: number;
-  currentYear: number;
-  viewMode?: CalendarViewMode;
-  onMonthChange: (month: number) => void;
-  onYearChange: (year: number) => void;
-  onViewModeChange?: (mode: CalendarViewMode) => void;
-  onNextMonth: () => void;
-  onPrevMonth: () => void;
+export type CalendarProps = React.ComponentProps<typeof DayPicker>;
+
+function Calendar({
+  className,
+  classNames,
+  showOutsideDays = true,
+  ...props
+}: CalendarProps) {
+  return (
+    <DayPicker
+      showOutsideDays={showOutsideDays}
+      className={cn('p-3 bg-[rgb(var(--background-start))] text-[rgb(var(--foreground))] dark:bg-[rgb(var(--background-end))] dark:text-[rgb(var(--foreground))]', className)}
+      classNames={{
+        months: 'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
+        month: 'space-y-4',
+        caption: 'flex justify-center pt-1 relative items-center',
+        caption_label: 'text-sm font-medium',
+        nav: 'space-x-1 flex items-center',
+        nav_button: cn(
+          buttonVariants({ variant: 'outline' }),
+          'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 dark:hover:opacity-100'
+        ),
+        nav_button_previous: 'absolute left-1',
+        nav_button_next: 'absolute right-1',
+        table: 'w-full border-collapse space-y-1',
+        head_row: 'flex',
+        head_cell: 'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]',
+        row: 'flex w-full mt-2',
+        cell: cn(
+          'relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent dark:[&:has([aria-selected])]:bg-accent',
+          'first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md'
+        ),
+        day: cn(
+          buttonVariants({ variant: 'ghost' }),
+          'h-9 w-9 p-0 font-normal aria-selected:opacity-100 dark:aria-selected:opacity-100'
+        ),
+        day_selected:
+          'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary dark:hover:text-primary-foreground dark:focus:bg-primary dark:focus:text-primary-foreground',
+        day_today: 'bg-accent text-accent-foreground dark:bg-accent dark:text-accent-foreground',
+        day_outside: 'text-muted-foreground opacity-50 dark:text-muted-foreground dark:opacity-50',
+        day_disabled: 'text-muted-foreground opacity-50 dark:text-muted-foreground dark:opacity-50',
+        day_range_middle:
+          'aria-selected:bg-accent aria-selected:text-accent-foreground dark:aria-selected:bg-accent dark:aria-selected:text-accent-foreground',
+        day_hidden: 'invisible',
+        ...classNames,
+      }}
+      components={{
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />,
+      }}
+      {...props}
+    />
+  );
+}
+Calendar.displayName = 'Calendar';
+
+export { Calendar };
+
+// DateTime Picker Component
+interface DateTimePickerProps {
+  date?: Date;
+  setDate?: (date: Date) => void;
+  className?: string;
 }
 
-const VIEW_MODES: { label: string; value: CalendarViewMode }[] = [
-  { label: 'Month', value: 'month' },
-  { label: 'Week', value: 'week' },
-  { label: 'Day', value: 'day' },
-  { label: 'Year', value: 'year' },
-];
-
-const MONTHS = [
-  'January', 'February', 'March', 'April',
-  'May', 'June', 'July', 'August',
-  'September', 'October', 'November', 'December'
-];
-
-export function CalendarNav({
-  currentMonth,
-  currentYear,
-  viewMode = 'month',
-  onMonthChange,
-  onYearChange,
-  onViewModeChange,
-  onNextMonth,
-  onPrevMonth,
-}: CalendarNavProps) {
-  // Generate year options for the past 10 years and next 10 years
-  const currentYearNum = new Date().getFullYear();
-  const yearOptions = Array.from(
-    { length: 21 },
-    (_, i) => currentYearNum - 10 + i
+export function DateTimePicker({
+  date,
+  setDate,
+  className,
+}: DateTimePickerProps) {
+  const [selectedDateTime, setSelectedDateTime] = React.useState<Date | undefined>(
+    date
   );
 
-  const handleTodayClick = () => {
-    const today = new Date();
-    onMonthChange(today.getMonth());
-    onYearChange(today.getFullYear());
+  const handleSelect = (day: Date | undefined) => {
+    if (!day) return;
+
+    const newDateTime = selectedDateTime
+      ? new Date(
+          day.getFullYear(),
+          day.getMonth(),
+          day.getDate(),
+          selectedDateTime.getHours(),
+          selectedDateTime.getMinutes()
+        )
+      : day;
+
+    setSelectedDateTime(newDateTime);
+    setDate?.(newDateTime);
   };
 
-  const currentDate = new Date(currentYear, currentMonth);
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const [hours, minutes] = e.target.value.split(':').map(Number);
+    
+    if (selectedDateTime) {
+      const newDateTime = new Date(selectedDateTime);
+      newDateTime.setHours(hours);
+      newDateTime.setMinutes(minutes);
+      setSelectedDateTime(newDateTime);
+      setDate?.(newDateTime);
+    }
+  };
 
   return (
-    <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-4">
-      {/* Left Section - Navigation */}
+    <div className={cn('space-y-4', className)}>
+      <Calendar
+        mode="single"
+        selected={selectedDateTime}
+        onSelect={handleSelect}
+      />
       <div className="flex items-center gap-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onPrevMonth}
-          aria-label="Previous month"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-
-        <div className="flex items-center gap-1">
-          <Select
-            value={currentMonth.toString()}
-            onValueChange={(value) => onMonthChange(parseInt(value))}
-          >
-            <SelectTrigger className="w-[140px]">
-              <SelectValue>
-                {MONTHS[currentMonth]}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {MONTHS.map((month, index) => (
-                <SelectItem key={month} value={index.toString()}>
-                  {month}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select
-            value={currentYear.toString()}
-            onValueChange={(value) => onYearChange(parseInt(value))}
-          >
-            <SelectTrigger className="w-[100px]">
-              <SelectValue>{currentYear}</SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {yearOptions.map((year) => (
-                <SelectItem key={year} value={year.toString()}>
-                  {year}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onNextMonth}
-          aria-label="Next month"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-
-        <div className="h-6 w-px bg-gray-200 mx-2" />
-
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleTodayClick}
-        >
-          Today
-        </Button>
+        <label htmlFor="time-input" className="sr-only">Select time</label>
+        <input
+          id="time-input"
+          type="time"
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-background dark:border-input dark:ring-offset-background"
+          value={
+            selectedDateTime
+              ? `${String(selectedDateTime.getHours()).padStart(2, '0')}:${String(
+                  selectedDateTime.getMinutes()
+                ).padStart(2, '0')}`
+              : ''
+          }
+          onChange={handleTimeChange}
+          aria-label="Select time"
+        />
       </div>
-
-      {/* Right Section - View Mode */}
-      {onViewModeChange && (
-        <div className="flex items-center gap-2">
-          <Select
-            value={viewMode}
-            onValueChange={(value) => 
-              onViewModeChange(value as CalendarViewMode)
-            }
-          >
-            <SelectTrigger className="w-[100px]">
-              <SelectValue>
-                {VIEW_MODES.find(mode => mode.value === viewMode)?.label}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {VIEW_MODES.map((mode) => (
-                <SelectItem key={mode.value} value={mode.value}>
-                  {mode.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
     </div>
   );
 }
 
-// Mini version for embedded calendars
-export function MiniCalendarNav({
-  currentMonth,
-  currentYear,
-  onNextMonth,
-  onPrevMonth,
-}: Omit<CalendarNavProps, 'onMonthChange' | 'onYearChange' | 'viewMode' | 'onViewModeChange'>) {
-  const currentDate = new Date(currentYear, currentMonth);
-  
+// Date Range Picker Component
+interface DateRangePickerProps {
+  className?: string;
+  dateRange?: DateRange;
+  onDateRangeChange?: (range: DateRange | undefined) => void;
+}
+
+export function DateRangePicker({
+  className,
+  dateRange,
+  onDateRangeChange,
+}: DateRangePickerProps) {
   return (
-    <div className="flex items-center justify-between pb-2 mb-2">
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={onPrevMonth}
-        className="h-7 w-7"
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </Button>
-      
-      <span className="text-sm font-medium">
-        {format(currentDate, 'MMMM yyyy')}
-      </span>
-      
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={onNextMonth}
-        className="h-7 w-7"
-      >
-        <ChevronRight className="h-4 w-4" />
-      </Button>
+    <div className={cn('', className)}>
+      <Calendar
+        mode="range"
+        selected={dateRange}
+        onSelect={onDateRangeChange}
+        numberOfMonths={2}
+        defaultMonth={dateRange?.from}
+      />
     </div>
   );
 }
-
-export default CalendarNav;

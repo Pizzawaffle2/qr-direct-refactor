@@ -194,6 +194,7 @@ const QuickSettings = memo(function QuickSettings({
       <Label className="flex items-center gap-2">
         <input
           type="checkbox"
+          title="Toggle week numbers"
           checked={settings.showWeekNumbers}
           onChange={(e) => onSettingsChange('showWeekNumbers', e.target.checked)}
           className="rounded border-gray-300"
@@ -203,6 +204,7 @@ const QuickSettings = memo(function QuickSettings({
       <Label className="flex items-center gap-2">
         <input
           type="checkbox"
+          title="Toggle holiday visibility"
           checked={settings.showHolidays}
           onChange={(e) => onSettingsChange('showHolidays', e.target.checked)}
           className="rounded border-gray-300"

@@ -87,7 +87,6 @@ function CalendarDay({
 
   const sortedEvents = useMemo(() => {
     return [...events].sort((a, b) => {
-      // Sort by all-day events first, then by time
       if (a.type === 'event' && b.type !== 'event') return -1;
       if (a.type !== 'event' && b.type === 'event') return 1;
       return 0;
@@ -101,20 +100,19 @@ function CalendarDay({
         'group relative min-h-[120px] p-2',
         'transition-colors duration-200',
         !isCurrentMonth && 'opacity-50',
-        isToday(date) && 'bg-primary/5',
-        isEditing && 'hover:bg-accent/5',
-        isOver && 'bg-primary/10'
+        isToday(date) && 'bg-[rgba(var(--primary),0.05)] dark:bg-[rgba(var(--primary),0.10)]',
+        isEditing && 'hover:bg-[rgba(var(--accent),0.05)] dark:hover:bg-[rgba(var(--accent),0.10)]',
+        isOver && 'bg-[rgba(var(--primary),0.10)] dark:bg-[rgba(var(--primary),0.15)]'
       )}
-      style={{ backgroundColor: theme.colors.background }}
+      style={{ backgroundColor: `rgb(var(--background))` }}
     >
-      {/* Date number and add button */}
       <div className="flex items-center justify-between">
         <span
           className={cn(
             'text-sm',
-            isToday(date) && 'font-semibold text-primary'
+            isToday(date) && 'font-semibold text-[rgb(var(--primary))] dark:text-[rgb(var(--primary))]'
           )}
-          style={{ color: theme.colors.text }}
+          style={{ color: `rgb(var(--text))` }}
         >
           {format(date, 'd')}
         </span>
@@ -130,14 +128,13 @@ function CalendarDay({
         )}
       </div>
 
-      {/* Events list */}
       <div className="mt-1 space-y-1">
         {sortedEvents.map((event) => (
           <div
             key={event.id}
             className={cn(
               'group/event relative rounded-sm p-1.5',
-              'hover:bg-white/50 hover:ring-1 hover:ring-gray-200'
+              'hover:bg-[rgba(var(--foreground),0.05)] dark:hover:bg-[rgba(var(--foreground),0.10)]'
             )}
             style={{
               backgroundColor: `${event.color}10`,
@@ -168,9 +165,8 @@ function CalendarDay({
           </div>
         ))}
 
-        {/* Add event form */}
         {isAddingEvent && (
-          <div className="absolute inset-0 z-10 bg-white p-2 shadow-lg">
+          <div className="absolute inset-0 z-10 bg-[rgb(var(--card))] dark:bg-[rgb(var(--card))] p-2 shadow-lg">
             <Input
               ref={inputRef}
               value={newEventTitle}
@@ -216,7 +212,6 @@ export function CalendarGrid({
   onRemoveEvent,
   onUpdateEvent
 }: CalendarGridProps) {
-  // Calculate calendar dates
   const calendarDates = useMemo(() => {
     const monthStart = startOfMonth(new Date(year, month));
     const monthEnd = endOfMonth(monthStart);
@@ -226,7 +221,6 @@ export function CalendarGrid({
     return eachDayOfInterval({ start: startDate, end: endDate });
   }, [month, year, settings.firstDayOfWeek]);
 
-  // Get weekday names
   const weekDays = useMemo(() => {
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     if (settings.firstDayOfWeek === 1) {
@@ -236,14 +230,13 @@ export function CalendarGrid({
   }, [settings.firstDayOfWeek]);
 
   return (
-    <div className="rounded-lg border" style={{ borderColor: theme.colors.border }}>
-      {/* Header */}
-      <div 
-        className="grid grid-cols-7 divide-x border-b bg-muted/5"
-        style={{ borderColor: theme.colors.border }}
+    <div className="rounded-lg border" style={{ borderColor: `rgb(var(--border))` }}>
+      <div
+        className="grid grid-cols-7 divide-x border-b bg-[rgba(var(--muted),0.05)] dark:bg-[rgba(var(--muted),0.10)]"
+        style={{ borderColor: `rgb(var(--border))` }}
       >
         {settings.showWeekNumbers && (
-          <div className="p-2 text-center text-sm font-medium text-muted-foreground">
+          <div className="p-2 text-center text-sm font-medium text-[rgb(var(--muted-foreground))]">
             Wk
           </div>
         )}
@@ -251,15 +244,14 @@ export function CalendarGrid({
           <div
             key={day}
             className="p-2 text-center text-sm font-medium"
-            style={{ color: theme.colors.text }}
+            style={{ color: `rgb(var(--text))` }}
           >
             {day}
           </div>
         ))}
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-7 divide-x divide-y" style={{ borderColor: theme.colors.border }}>
+      <div className="grid grid-cols-7 divide-x divide-y" style={{ borderColor: `rgb(var(--border))` }}>
         {calendarDates.map((date: Date) => {
           const dayEvents: CalendarEvent[] = events.filter((event: CalendarEvent) => 
             isSameDay(new Date(event.date), date)

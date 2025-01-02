@@ -82,19 +82,20 @@ export interface RecurringEventProps {
 export type RecurrenceFrequency = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
 // Settings Types
+export interface Holiday {
+  id: string;
+  name: string;
+  type: 'fixed' | 'floating' | 'custom';
+  date: Date;
+}
+
 export interface CalendarSettings {
-  firstDayOfWeek: 0 | 1;
+  theme: string;
+  firstDayOfWeek: number;
   showWeekNumbers: boolean;
-  theme: {
-    colors: ThemeColors;
-  };
-  monthsPerRow: number;
-  options: {
-    showLunarPhases: boolean;
-    showHolidays: boolean;
-    showWeather: boolean;
-    showNotes: boolean;
-  };
+  showLunarPhases: boolean;
+  showHolidays: boolean;
+  showWeather: boolean;
 }
 
 // Weather Types
@@ -174,23 +175,10 @@ export const DEFAULT_THEME: CalendarTheme = {
 export const DEFAULT_SETTINGS: CalendarSettings = {
   firstDayOfWeek: 0,
   showWeekNumbers: false,
-  theme: {
-    colors: {
-      primary: '#3B82F6',
-      secondary: '#60A5FA',
-      background: '#FFFFFF',
-      text: '#1F2937',
-      border: '#E5E7EB',
-      accent: '#818CF8'
-    }
-  },
-  monthsPerRow: 1,
-  options: {
-    showLunarPhases: false,
-    showHolidays: false,
-    showWeather: false,
-    showNotes: false
-  }
+  theme: 'default',
+  showLunarPhases: false,
+  showHolidays: false,
+  showWeather: false
 };
 
 // Utility Types

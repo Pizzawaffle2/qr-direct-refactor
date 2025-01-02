@@ -52,16 +52,16 @@ function CalendarHeader({
   onTitleChange: (title: string) => void;
 }) {
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-sm border-b">
+    <header className="fixed top-0 left-0 right-0 z-40 bg-[rgba(var(--background-start),0.8)] dark:bg-[rgba(var(--background-end),0.8)] backdrop-blur-sm border-b border-[rgb(var(--border))]">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <h1 className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
+          <h1 className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400">
             Calendar Generator
           </h1>
           <Input
             value={title}
             onChange={(e) => onTitleChange(e.target.value)}
-            className="w-64 text-sm bg-white/50"
+            className="w-64 text-sm bg-[rgba(var(--background-start),0.5)] dark:bg-[rgba(var(--background-end),0.5)]"
             placeholder="Enter calendar title..."
           />
         </div>
@@ -94,10 +94,12 @@ function LoadingOverlay({ isLoading }: { isLoading: boolean }) {
   if (!isLoading) return null;
   
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <Card className="bg-white/80 backdrop-blur-sm p-6">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500 mx-auto" />
-        <p className="mt-2 text-sm text-gray-500 text-center">Loading...</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(var(--foreground),0.5)] dark:bg-[rgba(var(--background-start),0.7)]">
+      <Card className="bg-[rgba(var(--background-start),0.8)] dark:bg-[rgba(var(--background-end),0.8)] backdrop-blur-sm p-6">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-500 mx-auto dark:text-blue-400" />
+        <p className="mt-2 text-sm text-[rgb(var(--muted-foreground))] dark:text-[rgb(var(--foreground))] text-center">
+          Loading...
+        </p>
       </Card>
     </div>
   );
@@ -105,12 +107,15 @@ function LoadingOverlay({ isLoading }: { isLoading: boolean }) {
 
 // Main Calendar Page Component
 export default function CalendarPage() {
-  const calendarRef = useRef<HTMLDivElement>(null);
+  const calendarRef = useRef<HTMLDivElement>(null!) as React.RefObject<HTMLDivElement>;
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [holidays, setHolidays] = useState<Holiday[]>([]);
-  const [settings, setSettings] = useState<CalendarSettings>(DEFAULT_SETTINGS);
+  const [settings, setSettings] = useState<CalendarSettings>({
+    ...DEFAULT_SETTINGS,
+    theme: DEFAULT_THEME.id || 'default'
+  });
   const [calendarTitle, setCalendarTitle] = useState('My Calendar');
   const [isEditing, setIsEditing] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -163,9 +168,8 @@ export default function CalendarPage() {
     toast.success('Event updated');
   };
 
-  const handleRecurringEvents = (recurringProps: RecurringEventProps) => {
-    const newEvents = createRecurringEvents(recurringProps);
-    setEvents(prev => [...prev, ...newEvents]);
+  const handleRecurringEvents = (events: CalendarEvent[]) => {
+    setEvents(prev => [...prev, ...events]);
     toast.success('Recurring events added');
   };
 
@@ -253,7 +257,7 @@ export default function CalendarPage() {
                     />
                     <StyleEditor
                       value={{
-                        firstDayOfWeek: settings.firstDayOfWeek,
+                        firstDayOfWeek: settings.firstDayOfWeek.toString() as "0" | "1",
                         showWeekNumbers: settings.showWeekNumbers,
                         theme: getThemeOrDefault(settings.theme),
                         monthsPerRow: 1,

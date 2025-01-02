@@ -1,4 +1,3 @@
-// src/components/calendar/theme-selector.tsx
 'use client';
 
 import { useState } from 'react';
@@ -20,18 +19,18 @@ const THEME_OPTIONS: ThemeOption[] = [
       background: '#FFFFFF',
       text: '#1F2937',
       border: '#E5E7EB',
-      accent: '#818CF8'
+      accent: '#818CF8',
     },
     typography: {
       fontFamily: 'Inter, sans-serif',
       headerSize: '18px',
-      dateSize: '14px'
+      dateSize: '14px',
     },
     frame: {
       type: 'basic',
-      borderStyle: 'solid'
+      borderStyle: 'solid',
     },
-    category: 'basic'
+    category: 'basic',
   },
   {
     id: 'minimal',
@@ -44,18 +43,18 @@ const THEME_OPTIONS: ThemeOption[] = [
       background: '#F9FAFB',
       text: '#111827',
       border: '#E5E7EB',
-      accent: '#6B7280'
+      accent: '#6B7280',
     },
     typography: {
       fontFamily: 'Inter, sans-serif',
       headerSize: '18px',
-      dateSize: '14px'
+      dateSize: '14px',
     },
     frame: {
       type: 'minimal',
-      borderStyle: 'solid'
+      borderStyle: 'solid',
     },
-    category: 'basic'
+    category: 'basic',
   },
   {
     id: 'spring',
@@ -68,19 +67,19 @@ const THEME_OPTIONS: ThemeOption[] = [
       background: '#ECFDF5',
       text: '#065F46',
       border: '#6EE7B7',
-      accent: '#059669'
+      accent: '#059669',
     },
     typography: {
       fontFamily: 'Inter, sans-serif',
       headerSize: '18px',
-      dateSize: '14px'
+      dateSize: '14px',
     },
     frame: {
       type: 'spring',
-      borderStyle: 'solid'
+      borderStyle: 'solid',
     },
     category: 'seasonal',
-    availableMonths: [2, 3, 4] // March to May
+    availableMonths: [2, 3, 4], // March to May
   },
   {
     id: 'winter',
@@ -93,20 +92,20 @@ const THEME_OPTIONS: ThemeOption[] = [
       background: '#F0F9FF',
       text: '#0C4A6E',
       border: '#7DD3FC',
-      accent: '#0284C7'
+      accent: '#0284C7',
     },
     typography: {
       fontFamily: 'Inter, sans-serif',
       headerSize: '18px',
-      dateSize: '14px'
+      dateSize: '14px',
     },
     frame: {
       type: 'snowflakes',
-      borderStyle: 'solid'
+      borderStyle: 'solid',
     },
     category: 'seasonal',
-    availableMonths: [11, 0, 1] // December to February
-  }
+    availableMonths: [11, 0, 1], // December to February
+  },
 ];
 
 interface ThemeSelectorProps {
@@ -118,27 +117,27 @@ interface ThemeSelectorProps {
 export function ThemeSelector({
   currentTheme,
   currentMonth,
-  onThemeSelect
+  onThemeSelect,
 }: ThemeSelectorProps) {
   const [category, setCategory] = useState<string>('all');
 
   const availableThemes = THEME_OPTIONS.filter((theme) => {
     const matchesCategory = category === 'all' || theme.category === category;
-    const availableInMonth = !theme.availableMonths || theme.availableMonths.includes(currentMonth);
+    const availableInMonth =
+      !theme.availableMonths || theme.availableMonths.includes(currentMonth);
     return matchesCategory && availableInMonth;
   });
 
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h3 className="text-lg font-medium">Theme</h3>
-        
+        <h3 className="text-lg font-medium text-[rgb(var(--text))] dark:text-[rgb(var(--foreground))]">
+          Theme
+        </h3>
+
         <div className="space-y-4">
-          <Select
-            value={category}
-            onValueChange={setCategory}
-          >
-            <SelectTrigger>
+          <Select value={category} onValueChange={setCategory}>
+            <SelectTrigger className="bg-[rgb(var(--input))] dark:bg-[rgb(var(--input))]">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent>
@@ -160,11 +159,10 @@ export function ThemeSelector({
                   'cursor-pointer transition-all duration-200',
                   'hover:shadow-md hover:-translate-y-0.5',
                   theme.id === currentTheme
-                    ? 'ring-2 ring-blue-500'
-                    : 'hover:ring-1 hover:ring-blue-500/50'
+                    ? 'ring-2 ring-blue-500 dark:ring-blue-400'
+                    : 'hover:ring-1 hover:ring-blue-500/50 dark:hover:ring-blue-400/50'
                 )}
               >
-                {/* Theme Preview */}
                 <div
                   className="aspect-video p-4"
                   style={{
@@ -189,12 +187,15 @@ export function ThemeSelector({
                   </div>
                 </div>
 
-                {/* Theme Info */}
-                <div className="border-t p-3">
+                <div className="border-t p-3 dark:border-[rgb(var(--border))]">
                   <div className="space-y-1">
-                    <h3 className="font-medium">{theme.name}</h3>
+                    <h3 className="font-medium text-[rgb(var(--text))] dark:text-[rgb(var(--foreground))]">
+                      {theme.name}
+                    </h3>
                     {theme.description && (
-                      <p className="text-xs text-gray-500">{theme.description}</p>
+                      <p className="text-xs text-[rgb(var(--muted-foreground))] dark:text-[rgb(var(--foreground))]">
+                        {theme.description}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -205,8 +206,8 @@ export function ThemeSelector({
       </div>
 
       {availableThemes.length === 0 && (
-        <div className="rounded-lg border border-dashed p-8 text-center">
-          <p className="text-sm text-gray-500">
+        <div className="rounded-lg border border-dashed p-8 text-center text-[rgb(var(--text))] dark:text-[rgb(var(--foreground))]">
+          <p className="text-sm text-[rgb(var(--muted-foreground))] dark:text-[rgb(var(--foreground))]">
             No themes available for the selected category and month.
           </p>
         </div>
