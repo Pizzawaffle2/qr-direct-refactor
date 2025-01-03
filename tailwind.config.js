@@ -1,10 +1,9 @@
 import { fontFamily } from 'tailwindcss/defaultTheme';
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ['class'],
   content: [
-    './src/**/*.{js,ts,jsx,tsx}', // Ensure all relevant directories are scanned
+    './src/**/*.{js,ts,jsx,tsx}',
     './app/**/*.{js,ts,jsx,tsx}',
     './pages/**/*.{js,ts,jsx,tsx}',
     './components/**/*.{js,ts,jsx,tsx}',
@@ -62,6 +61,14 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)',
       },
       keyframes: {
+        'collapsible-down': {
+          from: { height: 0 },
+          to: { height: 'var(--radix-collapsible-content-height)' },
+        },
+        'collapsible-up': {
+          from: { height: 'var(--radix-collapsible-content-height)' },
+          to: { height: 0 },
+        },
         'fade-up': {
           '0%': {
             opacity: '0',
@@ -84,10 +91,12 @@ module.exports = {
         },
       },
       animation: {
+        'collapsible-down': 'collapsible-down 0.2s ease-out',
+        'collapsible-up': 'collapsible-up 0.2s ease-out',
         'fade-up': 'fade-up 0.5s ease-out',
         'fade-down': 'fade-down 0.5s ease-out',
       },
     },
   },
-  plugins: [import('tailwindcss-animate')], // Correctly reference the plugin
+  plugins: [require('tailwindcss-animate')],
 };

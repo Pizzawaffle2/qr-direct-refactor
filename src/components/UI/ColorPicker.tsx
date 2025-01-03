@@ -1,3 +1,4 @@
+// src/components/UI/ColorPicker.tsx
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -43,7 +44,7 @@ function rgbaToHex({ r, g, b, a = 1 }: RGBAColor): string {
 function generatePalette(baseColor: string): string[] {
   const { r, g, b } = hexToRGBA(baseColor);
   const palette = [];
-  
+
   for (let i = 0.1; i <= 1; i += 0.2) {
     const lightShade = rgbaToHex({
       r: Math.min(255, r + (255 - r) * i),
@@ -53,7 +54,7 @@ function generatePalette(baseColor: string): string[] {
     });
     palette.push(lightShade);
   }
-  
+
   return palette.reverse();
 }
 
@@ -80,7 +81,7 @@ export function ColorPicker({ color, onChange, withOpacity = false }: ColorPicke
       const updatePosition = () => {
         const buttonRect = pickerRef.current?.getBoundingClientRect();
         const dropdownRect = dropdownRef.current?.getBoundingClientRect();
-        
+
         if (!buttonRect || !dropdownRect) return;
 
         const spaceBelow = window.innerHeight - buttonRect.bottom;
@@ -120,7 +121,7 @@ export function ColorPicker({ color, onChange, withOpacity = false }: ColorPicke
 
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        pickerRef.current && 
+        pickerRef.current &&
         dropdownRef.current &&
         !pickerRef.current.contains(event.target as Node) &&
         !dropdownRef.current.contains(event.target as Node)
@@ -146,11 +147,11 @@ export function ColorPicker({ color, onChange, withOpacity = false }: ColorPicke
       rgbaColor.a = opacity / 100;
     }
     const finalColor = rgbaToHex(rgbaColor);
-    
+
     const newHistory = [finalColor, ...colorHistory.filter(c => c !== finalColor)]
       .slice(0, MAX_HISTORY);
     setColorHistory(newHistory);
-    
+
     onChange(finalColor);
     setIsOpen(false);
   };
@@ -233,16 +234,16 @@ export function ColorPicker({ color, onChange, withOpacity = false }: ColorPicke
 
       {/* Dropdown Panel */}
       {isOpen && (
-  <div 
-    ref={dropdownRef}
-    style={{
-      position: 'fixed',
-      top: dropdownPosition.top,
-      left: dropdownPosition.left
-    }}
-    className="w-[280px] bg-gray-900 rounded-lg shadow-xl border border-gray-700 z-[9999]"
-    onClick={(e) => e.stopPropagation()}
-  >
+        <div
+          ref={dropdownRef}
+          style={{
+            position: 'fixed',
+            top: dropdownPosition.top,
+            left: dropdownPosition.left
+          }}
+          className="w-[280px] bg-gray-900 rounded-lg shadow-xl border border-gray-700 z-[9999]"
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Tabs */}
           <div className="p-2 border-b border-gray-700">
             <div className="flex gap-1 bg-gray-900/50 p-1 rounded-md">
@@ -295,7 +296,7 @@ export function ColorPicker({ color, onChange, withOpacity = false }: ColorPicke
                             key={presetColor}
                             onClick={() => handleColorChange(presetColor)}
                             className="w-8 h-8 rounded-lg border border-gray-700 
-                                     flex items-center justify-center relative hover:scale-110 transition-transform"
+                                flex items-center justify-center relative hover:scale-110 transition-transform"
                             style={{ backgroundColor: presetColor }}
                           >
                             {presetColor === color && (
@@ -319,7 +320,7 @@ export function ColorPicker({ color, onChange, withOpacity = false }: ColorPicke
                   <button
                     onClick={handlePaletteGeneration}
                     className="w-full px-4 py-2 text-sm bg-blue-500 text-white rounded-lg 
-                             hover:bg-blue-600 transition-colors"
+                        hover:bg-blue-600 transition-colors"
                   >
                     Generate New Palette
                   </button>
@@ -329,7 +330,7 @@ export function ColorPicker({ color, onChange, withOpacity = false }: ColorPicke
                         key={index}
                         onClick={() => handleColorChange(paletteColor)}
                         className="w-12 h-12 rounded-lg border border-gray-700 
-                                 flex items-center justify-center hover:scale-110 transition-transform"
+                            flex items-center justify-center hover:scale-110 transition-transform"
                         style={{ backgroundColor: paletteColor }}
                       >
                         {paletteColor === color && (
@@ -359,14 +360,14 @@ export function ColorPicker({ color, onChange, withOpacity = false }: ColorPicke
                           <button
                             onClick={() => handleColorChange(historyColor)}
                             className="flex-1 h-8 rounded-lg border border-gray-700 
-                                     flex items-center gap-2 px-2 hover:scale-[1.02] transition-transform"
+                                  flex items-center gap-2 px-2 hover:scale-[1.02] transition-transform"
                             style={{ backgroundColor: historyColor }}
                           >
                             <span className={`text-xs ${
                               historyColor.toLowerCase() === '#ffffff' ? 'text-black' : 'text-white'
                             }`}>
                               {historyColor.toUpperCase()}
-                              </span>
+                            </span>
                           </button>
                           <button
                             onClick={() => {
@@ -374,7 +375,7 @@ export function ColorPicker({ color, onChange, withOpacity = false }: ColorPicke
                               setColorHistory(newHistory);
                             }}
                             className="p-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity
-                                     text-gray-400 hover:text-red-500"
+                                  text-gray-400 hover:text-red-500"
                             title="Remove from history"
                           >
                             <Trash className="w-4 h-4" />
@@ -385,7 +386,7 @@ export function ColorPicker({ color, onChange, withOpacity = false }: ColorPicke
                               toast.success('Color copied to clipboard');
                             }}
                             className="p-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity
-                                     text-gray-400 hover:text-blue-500"
+                                  text-gray-400 hover:text-blue-500"
                             title="Copy to clipboard"
                           >
                             <Copy className="w-4 h-4" />
@@ -395,7 +396,7 @@ export function ColorPicker({ color, onChange, withOpacity = false }: ColorPicke
                       <button
                         onClick={() => setColorHistory([])}
                         className="w-full mt-2 px-3 py-1.5 text-sm text-red-500 hover:text-red-600 
-                                 hover:bg-red-500/10 rounded-lg transition-colors"
+                              hover:bg-red-500/10 rounded-lg transition-colors"
                       >
                         Clear History
                       </button>
@@ -417,7 +418,7 @@ export function ColorPicker({ color, onChange, withOpacity = false }: ColorPicke
               <label
                 htmlFor="color-picker-input"
                 className="flex items-center justify-center px-4 py-2 text-sm bg-gray-700 
-                         text-gray-200 rounded-lg hover:bg-gray-600 cursor-pointer transition-colors"
+                    text-gray-200 rounded-lg hover:bg-gray-600 cursor-pointer transition-colors"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Custom Color

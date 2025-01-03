@@ -1,6 +1,3 @@
-// src/components/calendar/calendar-grid.tsx
-'use client';
-
 import React, { useMemo } from 'react';
 import {
   format,
@@ -235,12 +232,12 @@ export function CalendarGrid({
 
       <div className="grid grid-cols-7">
         {calendarDates.map((date) => {
-          const dayEvents = events.filter(event => 
+          const dayEvents = events.filter(event =>
             isSameDay(new Date(event.date), date)
           );
 
           return (
-            <div 
+            <div
               key={format(date, 'yyyy-MM-dd')}
               className="border-l border-t first:border-l-0"
             >
